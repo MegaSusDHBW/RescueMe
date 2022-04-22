@@ -6,7 +6,7 @@ def generateKeypair():
     key = Fernet.generate_key()
 
     #KEY in db ablegen
-    with open('filekey.key', 'wb') as filekey:
+    with open('Flask/BackendHelper/Keys/filekey.key', 'wb') as filekey:
         filekey.write(key)
 
     fernet = Fernet(key)

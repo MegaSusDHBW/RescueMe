@@ -1,17 +1,29 @@
 import json
 
-from crypt import generateKeypair, encryptData, decryptData
+from Flask.BackendHelper.QRCode import generateQRCode
+from Flask.BackendHelper.crypt import generateKeypair, encryptData, decryptData
 
-#Test
+#Testdaten
 data = '{"name": "Hans", "alter": 50}'
+
+#Umwandeln von Json in bytes
 data = json.dumps(data).encode('utf-8')
 
-
+#fernet mit key erzeugen
+#key ablegen
 fernet = generateKeypair()
 encryptedJSON = encryptData(data, fernet)
 print(encryptedJSON)
 
-decryptedJSON = decryptData(encryptedJSON, fernet)
+#QRCode erzeugen
+generateQRCode(encryptedJSON)
+
+#key holen
+with open('Flask/BackendHelper/Keys/filekey.key', 'rb') as filekey:
+    key = filekey.read()
+
+#daten entschlüsseln
+decryptedJSON = decryptData(encryptedJSON, key)
 data = json.loads(decryptedJSON)
 print(data)
 #

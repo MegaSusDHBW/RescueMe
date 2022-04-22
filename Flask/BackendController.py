@@ -3,7 +3,8 @@ import json
 import what3words as what3words
 from flask import render_template, Flask
 
-from crypt import generateKeypair, encryptData, decryptData
+from Flask.BackendHelper.QRCode import generateQRCode
+from Flask.BackendHelper.crypt import generateKeypair, encryptData, decryptData
 
 
 
@@ -22,11 +23,13 @@ def encrypt():
     encryptedJSON = encryptData(data, fernet)
     print(encryptedJSON)
 
+    generateQRCode(encryptedJSON)
+
 @app.route("/decrypt")
 def decrypt():
     encryptedJSON = ""
 
-    with open('filekey.key', 'rb') as filekey:
+    with open('Flask/BackendHelper/Keys/filekey.key', 'rb') as filekey:
         key = filekey.read()
 
     decryptedJSON = decryptData(encryptedJSON, key)
