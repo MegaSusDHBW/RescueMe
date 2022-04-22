@@ -7,8 +7,7 @@ from Flask.BackendHelper.QRCode import generateQRCode
 from Flask.BackendHelper.crypt import generateKeypair, encryptData, decryptData
 
 
-
-app = Flask(__name__)
+app = Flask(__name__,template_folder='../templates')
 
 @app.route("/")
 def main():
@@ -24,17 +23,19 @@ def encrypt():
     print(encryptedJSON)
 
     generateQRCode(encryptedJSON)
+    return encryptedJSON
 
 @app.route("/decrypt")
 def decrypt():
-    encryptedJSON = ""
+    encryptedJSON = b'gAAAAABiYsjMXQL5n4ubzAYdf82PRcBXVTT2cfrPGvMUvt4y-Grv3vM4gXh8x7JhpLEIf2A6oCcNFGZ_RwTHKgoQ4hxTqXx72fHctYbBA0wrIZwoHEVCOJvtvraaJx8sclq2jSV79h7F'
 
-    with open('Flask/BackendHelper/Keys/filekey.key', 'rb') as filekey:
+    with open('BackendHelper/Keys/filekey.key', 'rb') as filekey:
         key = filekey.read()
 
     decryptedJSON = decryptData(encryptedJSON, key)
     data = json.loads(decryptedJSON)
     print(data)
+    return 'Decryption success'
 
 @app.route("/getGeodata")
 def getGeodata():
