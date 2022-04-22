@@ -6,6 +6,10 @@ def generateKeypair():
     key = Fernet.generate_key()
 
     #KEY in db ablegen
+
+
+
+    #KEY local ablagen -> Temporär erstmal
     with open('Flask/BackendHelper/Keys/filekey.key', 'wb') as filekey:
         filekey.write(key)
 
