@@ -1,17 +1,40 @@
 import json
 
 import what3words as what3words
-from flask import render_template, Flask
+from flask import render_template, Flask, request
 
 from Flask.BackendHelper.QRCode import generateQRCode
 from Flask.BackendHelper.crypt import generateKeypair, encryptData, decryptData
 
+from Models import InitDatabase
 
+#Für lokales Windows template_folder=templates
 app = Flask(__name__,template_folder='../templates')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost/rescueme'
+from Models import User
+InitDatabase.create_database(app=app)
 
 @app.route("/")
 def main():
     return render_template('index.html')
+
+@app.route("/sign-up", methods=['GET', 'POST'])
+def sign_up():
+    data = request.form
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        passwordConfirm = request.form.get('passwordConfirm')
+
+        if password != passwordConfirm:
+            print('Lösch dich')
+    return render_template('signUp.html')
+
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+    data = request.form
+    print(data)
+    return render_template('login.html')
 
 @app.route("/encrypt")
 def encrypt():
@@ -55,6 +78,6 @@ def getGeodata():
     #res = geocoder.convert_to_coordinates('prom.cape.pump')
     #print(res)
 
-
+#Pfusch aber lassen wir mal so
 if __name__ == "__main__":
     app.run()
