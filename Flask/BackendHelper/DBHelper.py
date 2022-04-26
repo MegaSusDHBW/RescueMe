@@ -1,24 +1,21 @@
 import pymysql
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+user = os.getenv('dbUser')
+key = os.getenv('dbKey')
+dbpath = f'mysql+pymysql://{user}:{key}@178.63.84.105:3306/mobs'
 
 def connect():
     mydb = pymysql.connect(
-        host="localhost",
-        user="root",
-        password="root",
-        database="rescueme"
+        host="178.63.84.105",
+        user=user,
+        password=key,
+        database="mobs"
     )
-
     return mydb
-
-def createDB():
-    mydb = pymysql.connect(
-        host="localhost",
-        user="root",
-        password="root",
-    )
-
-    cursor = mydb.cursor()
-    cursor.execute('CREATE DATABASE rescueme')
 
 def insertInDB(mydb, client, key):
     sql = "INSERT INTO clientkey (client, key) VALUES (%s, %s)"

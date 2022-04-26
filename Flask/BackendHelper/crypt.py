@@ -10,8 +10,12 @@ def generateKeypair():
 
 
     #KEY local ablagen -> Temporär erstmal
-    with open('Flask/BackendHelper/Keys/filekey.key', 'wb') as filekey:
-        filekey.write(key)
+    try:
+        with open('BackendHelper/Keys/filekey.key', 'wb') as filekey:
+            filekey.write(key)
+    except:
+        with open('Flask/BackendHelper/Keys/filekey.key', 'wb') as filekey:
+            filekey.write(key)
 
     fernet = Fernet(key)
     return fernet

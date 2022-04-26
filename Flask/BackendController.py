@@ -5,12 +5,13 @@ from flask import render_template, Flask, request
 
 from Flask.BackendHelper.QRCode import generateQRCode
 from Flask.BackendHelper.crypt import generateKeypair, encryptData, decryptData
+from Flask.BackendHelper.DBHelper import *
 
 from Models import InitDatabase
 
 #Für lokales Windows template_folder=templates
 app = Flask(__name__,template_folder='../templates')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost/rescueme'
+app.config['SQLALCHEMY_DATABASE_URI'] = dbpath
 from Models import User
 InitDatabase.create_database(app=app)
 
