@@ -2,17 +2,28 @@ import json
 
 import what3words as what3words
 import rsa
-from flask import render_template, Flask, request
-
+from flask import render_template, Flask, request, redirect, url_for
+from flask_login import login_user, login_required, logout_user, current_user, LoginManager
 from Flask.BackendHelper.DBHelper import *
 from Flask.BackendHelper.QRCode import generateQRCode
 from Flask.BackendHelper.crypt import generateKeypair, encryptData, decryptData
-from Models import InitDatabase
+from Flask.BackendHelper.hash import hashPassword, generateSalt
+from Models.InitDatabase import *
+from Models import User
 
 # Für lokales Windows template_folder=templates
 app = Flask(__name__, template_folder='../templates')
+app.config['SECRET_KEY'] = os.getenv('secret_key')
 app.config['SQLALCHEMY_DATABASE_URI'] = dbpath
-InitDatabase.create_database(app=app)
+create_database(app=app)
+
+login_manager = LoginManager()
+login_manager.login_view = 'login'
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(id):
+    return User.User.query.get(int(id))
 
 publicKey, privateKey = rsa.newkeys(512)
 
@@ -20,26 +31,63 @@ publicKey, privateKey = rsa.newkeys(512)
 def main():
     return render_template('index.html')
 
+@app.route("/home", methods=['GET', 'POST'])
+@login_required
+def home():
+    if request.method == 'POST':
+        return redirect(url_for('logout'))
+    return render_template('home.html')
+
 
 @app.route("/sign-up", methods=['GET', 'POST'])
 def sign_up():
-    data = request.form
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
         passwordConfirm = request.form.get('passwordConfirm')
 
-        if password != passwordConfirm:
-            print('Lösch dich')
+        user = User.User.query.filter_by(email=email).first()
+
+        if password == passwordConfirm and not user:
+            salt = generateSalt()
+            pepper = os.getenv('pepper')
+            pepper = bytes(pepper, 'utf-8')
+            db_password = hashPassword(salt + pepper, password)
+            new_user = User.User(email=email, salt=salt, password=db_password)
+            db.session.add(new_user)
+            db.session.commit()
+            return redirect(url_for('login'))
+        else:
+            print('Error')
     return render_template('signUp.html')
 
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
-    data = request.form
-    print(data)
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        user = User.User.query.filter_by(email=email).first()
+        salt = user.salt
+        pepper = os.getenv('pepper')
+        pepper = bytes(pepper, 'utf-8')
+        key = user.password
+        new_key = hashPassword(salt + pepper, password)
+
+        if user and key == new_key:
+            login_user(user)
+            print('Logged In')
+            return redirect(url_for('home'))
+        else:
+            print('Error')
     return render_template('login.html')
 
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
 
 @app.route("/encrypt", methods=['GET', 'POST'])
 def encrypt():

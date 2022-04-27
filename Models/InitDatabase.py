@@ -7,5 +7,4 @@ def create_database(app):
     DBHelper.connect()
     db.init_app(app)
     db.create_all(app=app)
-    print('Connected and tables created!')
 
