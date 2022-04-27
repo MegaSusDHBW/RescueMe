@@ -1,15 +1,15 @@
+import rsa
 from cryptography.fernet import Fernet
 
 
-def generateKeypair():
+def generateKeypair(publickey):
     # key generation
     key = Fernet.generate_key()
 
-    #KEY in db ablegen
+    # KEY in db ablegen
+    dbKey = encryptKeyForDb(publickey, str(key))
 
-
-
-    #KEY local ablagen -> Temporär erstmal
+    # KEY local ablagen -> Temporär erstmal
     try:
         with open('BackendHelper/Keys/filekey.key', 'wb') as filekey:
             filekey.write(key)
@@ -19,6 +19,15 @@ def generateKeypair():
 
     fernet = Fernet(key)
     return fernet
+
+
+def encryptKeyForDb(publickey, key):
+    return rsa.encrypt(key.encode(),
+                       publickey)
+
+
+def decryptKeyForDb(privatekey, encryptedKey):
+    return rsa.decrypt(encryptedKey, privatekey).decode()
 
 
 def encryptData(data, fernet):

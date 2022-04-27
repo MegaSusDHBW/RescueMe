@@ -1,23 +1,25 @@
 import json
 
 import what3words as what3words
+import rsa
 from flask import render_template, Flask, request
 
+from Flask.BackendHelper.DBHelper import *
 from Flask.BackendHelper.QRCode import generateQRCode
 from Flask.BackendHelper.crypt import generateKeypair, encryptData, decryptData
-from Flask.BackendHelper.DBHelper import *
-
 from Models import InitDatabase
 
-#Für lokales Windows template_folder=templates
-app = Flask(__name__,template_folder='../templates')
+# Für lokales Windows template_folder=templates
+app = Flask(__name__, template_folder='../templates')
 app.config['SQLALCHEMY_DATABASE_URI'] = dbpath
-from Models import User
 InitDatabase.create_database(app=app)
+
+publicKey, privateKey = rsa.newkeys(512)
 
 @app.route("/")
 def main():
     return render_template('index.html')
+
 
 @app.route("/sign-up", methods=['GET', 'POST'])
 def sign_up():
@@ -31,25 +33,28 @@ def sign_up():
             print('Lösch dich')
     return render_template('signUp.html')
 
+
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     data = request.form
     print(data)
     return render_template('login.html')
 
-@app.route("/encrypt")
+
+@app.route("/encrypt", methods=['GET', 'POST'])
 def encrypt():
     data = '{"name": "Hans", "alter": 50}'
     data = json.dumps(data).encode('utf-8')
 
-    fernet = generateKeypair()
+    fernet = generateKeypair(publicKey)
     encryptedJSON = encryptData(data, fernet)
     print(encryptedJSON)
 
     generateQRCode(encryptedJSON)
     return encryptedJSON
 
-@app.route("/decrypt")
+
+@app.route("/decrypt", methods=['GET', 'POST'])
 def decrypt():
     encryptedJSON = b'gAAAAABiYsjMXQL5n4ubzAYdf82PRcBXVTT2cfrPGvMUvt4y-Grv3vM4gXh8x7JhpLEIf2A6oCcNFGZ_RwTHKgoQ4hxTqXx72fHctYbBA0wrIZwoHEVCOJvtvraaJx8sclq2jSV79h7F'
 
@@ -61,13 +66,14 @@ def decrypt():
     print(data)
     return 'Decryption success'
 
-@app.route("/getGeodata")
+
+@app.route("/getGeodata", methods=['GET', 'POST'])
 def getGeodata():
     # public
     geocoder = what3words.Geocoder("what3words-api-key")
 
     # eigener Server
-    #geocoder = what3words.Geocoder("what3words-api-key", end_point='http://localhost:8080/v3')
+    # geocoder = what3words.Geocoder("what3words-api-key", end_point='http://localhost:8080/v3')
 
     X = 51.484463
     Y = -0.195405
@@ -75,10 +81,11 @@ def getGeodata():
     res = geocoder.convert_to_3wa(what3words.Coordinates(X, Y))
     print(res)
 
-    #Um Worte in Koordinaten umzuwandeln
-    #res = geocoder.convert_to_coordinates('prom.cape.pump')
-    #print(res)
+    # Um Worte in Koordinaten umzuwandeln
+    # res = geocoder.convert_to_coordinates('prom.cape.pump')
+    # print(res)
 
-#Pfusch aber lassen wir mal so
+
+# Pfusch aber lassen wir mal so
 if __name__ == "__main__":
     app.run()
