@@ -15,8 +15,8 @@ from Models.InitDatabase import *
 
 # Für lokales Windows template_folder=templates
 app = Flask(__name__, template_folder='../templates')
-cors = CORS(app)
-app.config['CORS_HEADERS'] = 'Content-Type'
+#cors = CORS(app)
+#app.config['CORS_HEADERS'] = 'Content-Type'
 app.config['SECRET_KEY'] = os.getenv('secret_key')
 app.config['SQLALCHEMY_DATABASE_URI'] = dbpath
 create_database(app=app)
@@ -47,8 +47,8 @@ def home():
 @cross_origin()
 def sign_up():
     if request.method == 'POST':
-        json_data = request.json
-        json_data.headers.add('Access-Control-Allow-Origin', '*')
+        json_data = request.get_json(force=True)
+        #json_data.headers.add('Access-Control-Allow-Origin', '*')
         print(json_data)
         email = json_data['email']
         print(email)
