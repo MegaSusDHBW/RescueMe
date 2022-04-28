@@ -48,6 +48,7 @@ def home():
 def sign_up():
     if request.method == 'POST':
         json_data = request.json
+        json_data.headers.add('Access-Control-Allow-Origin', '*')
         print(json_data)
         email = json_data['email']
         print(email)
