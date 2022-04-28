@@ -44,9 +44,13 @@ def home():
 def sign_up():
     if request.method == 'POST':
         json_data = request.json
+        print(json_data)
         email = json_data['email']
+        print(email)
         password = json_data['password']
+        print(password)
         passwordConfirm = json_data['passwordConfirm']
+        print(passwordConfirm)
 
         user = User.User.query.filter_by(email=email).first()
 
