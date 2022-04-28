@@ -1,15 +1,16 @@
 import json
 
-import what3words as what3words
 import rsa
+import what3words as what3words
 from flask import render_template, Flask, request, redirect, url_for
-from flask_login import login_user, login_required, logout_user, current_user, LoginManager
+from flask_login import login_user, login_required, logout_user, LoginManager
+
 from Flask.BackendHelper.DBHelper import *
 from Flask.BackendHelper.QRCode import generateQRCode
 from Flask.BackendHelper.crypt import generateKeypair, encryptData, decryptData
 from Flask.BackendHelper.hash import hashPassword, generateSalt
-from Models.InitDatabase import *
 from Models import User
+from Models.InitDatabase import *
 
 # Für lokales Windows template_folder=templates
 app = Flask(__name__, template_folder='../templates')
@@ -42,9 +43,14 @@ def home():
 @app.route("/sign-up", methods=['GET', 'POST'])
 def sign_up():
     if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-        passwordConfirm = request.form.get('passwordConfirm')
+       # email = request.form.get('email')
+       # password = request.form.get('password')
+       # passwordConfirm = request.form.get('passwordConfirm')
+        email = request.json["email"]
+        password = request.json["password"]
+        print("Received Email:" + str(email))
+        print("Received PW:" + str(password))
+        passwordConfirm = ""
 
         user = User.User.query.filter_by(email=email).first()
 
