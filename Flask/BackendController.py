@@ -3,6 +3,7 @@ import json
 import rsa
 import what3words as what3words
 from flask import render_template, Flask, request, redirect, url_for
+from flask_cors import CORS, cross_origin
 from flask_login import login_user, login_required, logout_user, LoginManager
 
 from Flask.BackendHelper.DBHelper import *
@@ -14,6 +15,8 @@ from Models.InitDatabase import *
 
 # Für lokales Windows template_folder=templates
 app = Flask(__name__, template_folder='../templates')
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 app.config['SECRET_KEY'] = os.getenv('secret_key')
 app.config['SQLALCHEMY_DATABASE_URI'] = dbpath
 create_database(app=app)
@@ -41,6 +44,7 @@ def home():
 
 
 @app.route("/sign-up", methods=['GET', 'POST'])
+@cross_origin()
 def sign_up():
     if request.method == 'POST':
         json_data = request.json
