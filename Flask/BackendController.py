@@ -43,14 +43,10 @@ def home():
 @app.route("/sign-up", methods=['GET', 'POST'])
 def sign_up():
     if request.method == 'POST':
-       # email = request.form.get('email')
-       # password = request.form.get('password')
-       # passwordConfirm = request.form.get('passwordConfirm')
-        email = request.json["email"]
-        password = request.json["password"]
-        print("Received Email:" + str(email))
-        print("Received PW:" + str(password))
-        passwordConfirm = ""
+        json_data = request.json
+        email = json_data['email']
+        password = json_data['password']
+        passwordConfirm = json_data['passwordConfirm']
 
         user = User.User.query.filter_by(email=email).first()
 
@@ -110,7 +106,7 @@ def encrypt():
 
 @app.route("/decrypt", methods=['GET', 'POST'])
 def decrypt():
-    encryptedJSON = b'gAAAAABiYsjMXQL5n4ubzAYdf82PRcBXVTT2cfrPGvMUvt4y-Grv3vM4gXh8x7JhpLEIf2A6oCcNFGZ_RwTHKgoQ4hxTqXx72fHctYbBA0wrIZwoHEVCOJvtvraaJx8sclq2jSV79h7F'
+    encryptedJSON = b'gAAAAABias2I9qSxvMH8eg7WT6f3-xrDLgMxIY5yhIQkUU0sy1v_R7-HDa_LdcBGd4v1Tkx27hBnDuwFuGYwjAvtTDSnQDujKiQ_n4GzDexjz08qZGKkBbqz9DFROmZzbBlFtOf1hNvK'
 
     with open('BackendHelper/Keys/filekey.key', 'rb') as filekey:
         key = filekey.read()
