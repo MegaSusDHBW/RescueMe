@@ -2,7 +2,7 @@ import json
 
 import rsa
 import what3words as what3words
-from flask import render_template, Flask, request, redirect, url_for
+from flask import render_template, Flask, request, redirect, url_for, jsonify
 from flask_cors import cross_origin
 from flask_login import login_user, login_required, logout_user, LoginManager
 
@@ -63,7 +63,7 @@ def sign_up():
             return redirect(url_for('login'))
         else:
             print('Error')
-    return render_template('signUp.html')
+    return render_template('signUp.html'), jsonify()
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -123,14 +123,15 @@ def decrypt():
 
 @app.route("/getGeodata", methods=['GET', 'POST'])
 def getGeodata():
+    json_data = request.get_json()
+    X = json_data["longitude"]
+    Y = json_data["latitude"]
+
     # public
     geocoder = what3words.Geocoder("what3words-api-key")
 
-    # eigener Server
-    # geocoder = what3words.Geocoder("what3words-api-key", end_point='http://localhost:8080/v3')
-
-    X = 51.484463
-    Y = -0.195405
+    # X = 51.484463
+    # Y = -0.195405
 
     res = geocoder.convert_to_3wa(what3words.Coordinates(X, Y))
     print(res)
