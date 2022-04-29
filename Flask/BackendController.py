@@ -3,7 +3,7 @@ import json
 import rsa
 import what3words as what3words
 from flask import render_template, Flask, request, redirect, url_for
-from flask_cors import CORS, cross_origin
+from flask_cors import cross_origin
 from flask_login import login_user, login_required, logout_user, LoginManager
 
 from Flask.BackendHelper.DBHelper import *
@@ -15,8 +15,6 @@ from Models.InitDatabase import *
 
 # Für lokales Windows template_folder=templates
 app = Flask(__name__, template_folder='../templates')
-#cors = CORS(app)
-#app.config['CORS_HEADERS'] = 'Content-Type'
 app.config['SECRET_KEY'] = os.getenv('secret_key')
 app.config['SQLALCHEMY_DATABASE_URI'] = dbpath
 create_database(app=app)
@@ -47,15 +45,10 @@ def home():
 @cross_origin()
 def sign_up():
     if request.method == 'POST':
-        json_data = request.get_json(force=True)
-        #json_data.headers.add('Access-Control-Allow-Origin', '*')
-        print(json_data)
+        json_data = request.get_json()
         email = json_data['email']
-        print(email)
         password = json_data['password']
-        print(password)
         passwordConfirm = json_data['passwordConfirm']
-        print(passwordConfirm)
 
         user = User.User.query.filter_by(email=email).first()
 
@@ -74,10 +67,12 @@ def sign_up():
 
 
 @app.route("/login", methods=['GET', 'POST'])
+@cross_origin()
 def login():
     if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
+        json_data = request.get_json()
+        email = json_data['email']
+        password = json_data['password']
 
         user = User.User.query.filter_by(email=email).first()
         salt = user.salt
