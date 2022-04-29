@@ -127,6 +127,9 @@ def getGeodata():
     X = json_data["longitude"]
     Y = json_data["latitude"]
 
+    print("X: " +str(X))
+    print("Y:" +str(Y))
+
     # public
     geocoder = what3words.Geocoder("what3words-api-key")
 
