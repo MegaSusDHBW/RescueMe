@@ -2,7 +2,7 @@ import json
 
 import rsa
 import what3words as what3words
-from flask import render_template, Flask, request, redirect, url_for, jsonify
+from flask import render_template, Flask, request, redirect, url_for, make_response
 from flask_cors import cross_origin
 from flask_login import login_user, login_required, logout_user, LoginManager
 
@@ -49,6 +49,9 @@ def sign_up():
         email = json_data['email']
         password = json_data['password']
         passwordConfirm = json_data['passwordConfirm']
+        #email = request.form.get('email')
+        #passwordConfirm = request.form.get('passwordConfirm')
+        #password = request.form.get('password')
 
         user = User.User.query.filter_by(email=email).first()
 
@@ -63,7 +66,7 @@ def sign_up():
             return redirect(url_for('login'))
         else:
             print('Error')
-    return render_template('signUp.html'), jsonify()
+    return render_template('signUp.html')
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -73,13 +76,19 @@ def login():
         json_data = request.get_json()
         email = json_data['email']
         password = json_data['password']
+        #email = request.form.get('email')
+        #password = request.form.get('password')
 
         user = User.User.query.filter_by(email=email).first()
-        salt = user.salt
-        pepper = os.getenv('pepper')
-        pepper = bytes(pepper, 'utf-8')
-        key = user.password
-        new_key = hashPassword(salt + pepper, password)
+
+        if user:
+            salt = user.salt
+            pepper = os.getenv('pepper')
+            pepper = bytes(pepper, 'utf-8')
+            key = user.password
+            new_key = hashPassword(salt + pepper, password)
+        else:
+            return redirect(url_for('sign_up'))
 
         if user and key == new_key:
             login_user(user)
@@ -88,6 +97,21 @@ def login():
         else:
             print('Error')
     return render_template('login.html')
+
+@app.route("/delete-user", methods=['GET', 'POST'])
+@cross_origin()
+@login_required
+def delete_user():
+    email = request.args['email']
+    user = User.User.query.filter_by(email=email).first()
+    if user:
+        logout_user()
+        db.session.delete(user)
+        db.session.commit()
+        return redirect(url_for('login'))
+    else:
+        return redirect(url_for('sign_up'))
+
 
 @app.route("/logout")
 @login_required
@@ -143,6 +167,9 @@ def getGeodata():
     # res = geocoder.convert_to_coordinates('prom.cape.pump')
     # print(res)
 
+@app.after_request
+def returnStatusCode(response):
+    return response
 
 # Pfusch aber lassen wir mal so
 if __name__ == "__main__":
