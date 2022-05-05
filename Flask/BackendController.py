@@ -8,7 +8,7 @@ from flask_login import login_user, login_required, logout_user, LoginManager
 
 from Flask.BackendHelper.DBHelper import *
 from Flask.BackendHelper.QRCode import generateQRCode
-from Flask.BackendHelper.crypt import generateKeypair, encryptData, decryptData
+from Flask.BackendHelper.crypt import decryptData
 from Flask.BackendHelper.hash import hashPassword, generateSalt
 from Models import User
 from Models.EmergencyContact import EmergencyContact
