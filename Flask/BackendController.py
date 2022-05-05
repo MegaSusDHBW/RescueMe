@@ -148,6 +148,9 @@ def getEmergencyContact():
         }
 
         new_emergencycontact = EmergencyContact(firstname=firstname, lastname=lastname, birhtdate=birhtdate, phonenumber=phonenumber, email=email)
+        db.session.add(new_emergencycontact)
+        db.session.commit()
+
         return jsonify(response="Notfallkontakt angelegt"), 200
     except:
         return jsonify(response="Fehler beim Anlegen des Notfallkontakts"), 404
@@ -171,6 +174,9 @@ def getHealthData():
         }
 
         new_healthdata = HealthData(firstname=firstname, lastname=lastname, organDonorState=organDonorState, bloodGroup=bloodGroup)
+        db.session.add(new_healthdata)
+        db.session.commit()
+
         return jsonify(response="Gesundheitsdaten erhalten"), 200
     except:
         return jsonify(response="Fehler beim Anlegen der Gesundheitsdaten"), 404
