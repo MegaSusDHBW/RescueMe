@@ -205,11 +205,16 @@ def encrypt():
     qrcode_dict.update(dict_healthdata)
     qrcode_dict.update(dict_emergencycontact)
 
-    results = db.session.query(HealthData.HealthData.firstname, HealthData.HealthData.lastname,
-                               HealthData.HealthData.bloodGroup, EmergencyContact.EmergencyContact.lastname,
-                               EmergencyContact.EmergencyContact.firstname, EmergencyContact.EmergencyContact.email,
-                               EmergencyContact.EmergencyContact.phonenumber).join(
-        HealthData.HealthData).join(EmergencyContact.EmergencyContact).filter(User.User.email == user_mail).all()
+    q = db.session.query(
+        User.User, HealthData.HealthData, EmergencyContact.EmergencyContact
+    ).join(
+        EmergencyContact.EmergencyContact
+    ).join(
+        HealthData.HealthData
+    ).filter(
+        User.User.email == user_mail,
+    ).first()
+
 #    qrcode_dict.update({"firstname": results[1].firstname})
 #    qrcode_dict.update({"lastname": results[1].lastname})
 
