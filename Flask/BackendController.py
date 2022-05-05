@@ -208,9 +208,9 @@ def encrypt():
     q = db.session.query(
         User.User, HealthData.HealthData, EmergencyContact.EmergencyContact
     ).join(
-        EmergencyContact.EmergencyContact, User.User.idEmergencyContact == EmergencyContact.EmergencyContact.id
+        EmergencyContact.EmergencyContact
     ).join(
-        HealthData.HealthData, User.User.idHealthData == HealthData.HealthData.id
+        HealthData.HealthData
     ).filter_by(
         User.User.email == user_mail
     ).first()
