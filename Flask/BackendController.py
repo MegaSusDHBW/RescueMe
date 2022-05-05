@@ -151,14 +151,6 @@ def getEmergencyContact():
         else:
             return jsonify(response="User nicht vorhanden"), 404
 
-        dict_emergencycontact = {
-            "firstnameEC": firstname,
-            "lastnameEC": lastname,
-            "birthdate": birthdate,
-            "phonenumber": phonenumber,
-            "email": email
-        }
-
         return jsonify(response="Notfallkontakt angelegt"), 200
     except:
         return jsonify(response="Fehler beim Anlegen des Notfallkontakts"), 404
@@ -185,13 +177,6 @@ def getHealthData():
         else:
             return jsonify(response="User nicht vorhanden"), 404
 
-        dict_healthdata = {
-            "firstname": firstname,
-            "lastname": lastname,
-            "organdonorstate": organDonorState,
-            "bloodgroup": bloodGroup
-        }
-
         return jsonify(response="Gesundheitsdaten erhalten"), 200
     except:
         return jsonify(response="Fehler beim Anlegen der Gesundheitsdaten"), 404
@@ -200,34 +185,38 @@ def getHealthData():
 @app.route("/encrypt/qrcode", methods=['GET'])
 def encrypt():
     user_mail = request.args['email']
+    user = User.User.query.filter_by(email=user_mail).first()
 
     qrcode_dict = {}
-    qrcode_dict.update(dict_healthdata)
-    qrcode_dict.update(dict_emergencycontact)
 
     q = db.session.query(
-        User.User, HealthData.HealthData, EmergencyContact.EmergencyContact
+        User.User.email, HealthData.HealthData.firstname, HealthData.HealthData.lastname,
+        HealthData.HealthData.organDonorState, HealthData.HealthData.bloodGroup,
+        EmergencyContact.EmergencyContact.email, EmergencyContact.EmergencyContact.firstname,
+        EmergencyContact.EmergencyContact.lastname, EmergencyContact.EmergencyContact.birthdate,
+        EmergencyContact.EmergencyContact.phonenumber
     ).join(
         EmergencyContact.EmergencyContact
     ).join(
         HealthData.HealthData
-    ).filter_by(
-        User.User.email == user_mail
-    ).first()
+    ).filter(user.email == user_mail)
 
-    qe = db.session.query(User.User.email).all()
+    user_info = q[0]
 
-#    qrcode_dict.update({"firstname": results[1].firstname})
-#    qrcode_dict.update({"lastname": results[1].lastname})
+    #Nicht hardcoden TODO
+    qrcode_dict.update({"email": user_info[0]})
+    qrcode_dict.update({"firstname": user_info[1]})
+    qrcode_dict.update({"lastname": user_info[2]})
+    qrcode_dict.update({"organDonorState": user_info[3]})
+    qrcode_dict.update({"bloodGroup": user_info[4]})
+    qrcode_dict.update({"emergencyEmail": user_info[5]})
+    qrcode_dict.update({"emergencyFirstname": user_info[6]})
+    qrcode_dict.update({"emergencyLastname": user_info[7]})
+    qrcode_dict.update({"emergencyBirthday": user_info[8]})
+    qrcode_dict.update({"emergencyPhone": user_info[9]})
 
-    # data = '{"name": "Hans", "alter": 50}'
-    # data = json.dumps(data).encode('utf-8')
+    print(qrcode_dict)
 
-    # fernet = generateKeypair(publicKey)
-    # encryptedJSON = encryptData(dict, fernet)
-    # print(encryptedJSON)
-
-    # TODO
     qrcode = generateQRCode(qrcode_dict)
     image = 'BackendHelper/QR/qrcode.png'
 
@@ -265,11 +254,6 @@ def getGeodata():
         return jsonify(words=res["words"]), 200
     except:
         return jsonify(words="Fehler beim Umwandeln der Koordinaten in What3Words"), 404
-
-
-@app.after_request
-def returnStatusCode(response):
-    return response
 
 
 if __name__ == "__main__":
