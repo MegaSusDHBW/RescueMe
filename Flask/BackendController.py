@@ -212,26 +212,29 @@ def decrypt():
 
 @app.route("/getGeodata", methods=['POST'])
 def getGeodata():
-    json_data = request.get_json()
-    X = json_data["coords"]["longitude"]
-    Y = json_data["coords"]["latitude"]
+    try:
+        json_data = request.get_json()
+        X = json_data["coords"]["longitude"]
+        Y = json_data["coords"]["latitude"]
 
-    print("X: " + str(X))
-    print("Y:" + str(Y))
+        print("X: " + str(X))
+        print("Y:" + str(Y))
 
-    # public
-    geocoder = what3words.Geocoder("U7LVW2RA")
+        # public
+        geocoder = what3words.Geocoder("U7LVW2RA")
 
-    # X = 51.484463
-    # Y = -0.195405
+        # X = 51.484463
+        # Y = -0.195405
 
-    res = geocoder.convert_to_3wa(what3words.Coordinates(X, Y))
-    print(res["words"])
+        res = geocoder.convert_to_3wa(what3words.Coordinates(X, Y))
+        print(res["words"])
 
-    # Um Worte in Koordinaten umzuwandeln
-    # res = geocoder.convert_to_coordinates('prom.cape.pump')
-    # print(res)
-
+        # Um Worte in Koordinaten umzuwandeln
+        # res = geocoder.convert_to_coordinates('prom.cape.pump')
+        # print(res)
+        return jsonify(words=res["words"]), 200
+    except:
+        return jsonify(words="Fehler beim Umwandeln der Koordinaten in What3Words"), 404
 
 @app.after_request
 def returnStatusCode(response):
