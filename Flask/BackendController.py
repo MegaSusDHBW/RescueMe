@@ -138,6 +138,20 @@ def getEmergencyContact():
         birhtdate = contact_json["birthDate"]
         phonenumber = contact_json["phoneNumber"]
         email = contact_json["email"]
+        emailUser = contact_json["emailUser"]
+
+        user = User.User.query.filter_by(email=emailUser).first()
+        if user:
+            new_emergencycontact = EmergencyContact(firstname=firstname, lastname=lastname, birhtdate=birhtdate,
+                                                    phonenumber=phonenumber, email=email)
+            db.session.add(new_emergencycontact)
+            db.session.commit()
+
+
+        else:
+            return jsonify(response="User nicht vorhanden"), 404
+
+
 
         dict_emergencycontact = {
             "firstnameEC": firstname,
@@ -147,9 +161,7 @@ def getEmergencyContact():
             "email": email
         }
 
-        new_emergencycontact = EmergencyContact(firstname=firstname, lastname=lastname, birhtdate=birhtdate, phonenumber=phonenumber, email=email)
-        db.session.add(new_emergencycontact)
-        db.session.commit()
+
 
         return jsonify(response="Notfallkontakt angelegt"), 200
     except:
