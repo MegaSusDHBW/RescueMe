@@ -11,8 +11,9 @@ from Flask.BackendHelper.QRCode import generateQRCode
 from Flask.BackendHelper.crypt import generateKeypair, encryptData, decryptData
 from Flask.BackendHelper.hash import hashPassword, generateSalt
 from Models import User
+from Models.EmergencyContact import EmergencyContact
+from Models.HealthData import HealthData
 from Models.InitDatabase import *
-import imageio
 
 # Für lokales Windows template_folder=templates
 app = Flask(__name__, template_folder='../templates')
@@ -57,9 +58,6 @@ def sign_up():
         email = json_data['email']
         password = json_data['password']
         passwordConfirm = json_data['passwordConfirm']
-        # email = request.form.get('email')
-        # passwordConfirm = request.form.get('passwordConfirm')
-        # password = request.form.get('password')
 
         user = User.User.query.filter_by(email=email).first()
 
@@ -149,7 +147,7 @@ def getEmergencyContact():
             "email": email
         }
 
-        # TODO toDB
+        new_emergencycontact = EmergencyContact(firstname=firstname, lastname=lastname, birhtdate=birhtdate, phonenumber=phonenumber, email=email)
         return jsonify(response="Notfallkontakt angelegt"), 200
     except:
         return jsonify(response="Fehler beim Anlegen des Notfallkontakts"), 404
@@ -172,7 +170,7 @@ def getHealthData():
             "bloodgroup": bloodGroup
         }
 
-        # TODO toDB
+        new_healthdata = HealthData(firstname=firstname, lastname=lastname, organDonorState=organDonorState, bloodGroup=bloodGroup)
         return jsonify(response="Gesundheitsdaten erhalten"), 200
     except:
         return jsonify(response="Fehler beim Anlegen der Gesundheitsdaten"), 404
@@ -184,6 +182,8 @@ def encrypt():
     qrcode_dict.update(dict_healthdata)
     qrcode_dict.update(dict_emergencycontact)
 
+    #TODO dict_healthdata von DB auslesen und als dict in das qrcode-dict updaten
+
     # data = '{"name": "Hans", "alter": 50}'
     # data = json.dumps(data).encode('utf-8')
 
@@ -191,6 +191,7 @@ def encrypt():
     # encryptedJSON = encryptData(dict, fernet)
     # print(encryptedJSON)
 
+    #TODO
     qrcode = generateQRCode(qrcode_dict)
     image = 'BackendHelper/QR/qrcode.png'
 
@@ -214,24 +215,17 @@ def decrypt():
 def getGeodata():
     try:
         json_data = request.get_json()
-        X = json_data["coords"]["longitude"]
-        Y = json_data["coords"]["latitude"]
+        Y = json_data["coords"]["longitude"]
+        X = json_data["coords"]["latitude"]
 
         print("X: " + str(X))
         print("Y:" + str(Y))
 
-        # public
         geocoder = what3words.Geocoder("U7LVW2RA")
-
-        # X = 51.484463
-        # Y = -0.195405
 
         res = geocoder.convert_to_3wa(what3words.Coordinates(X, Y))
         print(res["words"])
 
-        # Um Worte in Koordinaten umzuwandeln
-        # res = geocoder.convert_to_coordinates('prom.cape.pump')
-        # print(res)
         return jsonify(words=res["words"]), 200
     except:
         return jsonify(words="Fehler beim Umwandeln der Koordinaten in What3Words"), 404
@@ -240,7 +234,5 @@ def getGeodata():
 def returnStatusCode(response):
     return response
 
-
-# Pfusch aber lassen wir mal so
 if __name__ == "__main__":
     app.run()
