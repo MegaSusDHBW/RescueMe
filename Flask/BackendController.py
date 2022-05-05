@@ -192,7 +192,7 @@ def encrypt():
     # print(encryptedJSON)
 
     qrcode = generateQRCode(qrcode_dict)
-    image = imageio.v2.imread('BackendHelper/QR/qrcode.png')
+    image = 'BackendHelper/QR/qrcode.png'
 
     return send_file(image, mimetype='image/png'), 200
 
@@ -210,7 +210,7 @@ def decrypt():
     return 'Decryption success'
 
 
-@app.route("/getGeodata", methods=['GET', 'POST'])
+@app.route("/getGeodata", methods=['POST'])
 def getGeodata():
     json_data = request.get_json()
     X = json_data["longitude"]
@@ -220,7 +220,7 @@ def getGeodata():
     print("Y:" + str(Y))
 
     # public
-    geocoder = what3words.Geocoder("what3words-api-key")
+    geocoder = what3words.Geocoder("U7LVW2RA")
 
     # X = 51.484463
     # Y = -0.195405
