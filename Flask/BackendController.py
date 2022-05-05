@@ -23,7 +23,8 @@ login_manager = LoginManager()
 login_manager.login_view = 'login'
 login_manager.init_app(app)
 
-
+dict_emergencycontact = {}
+dict_healthdata = {}
 
 @login_manager.user_loader
 def load_user(id):
