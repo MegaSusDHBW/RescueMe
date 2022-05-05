@@ -226,7 +226,7 @@ def getGeodata():
     # Y = -0.195405
 
     res = geocoder.convert_to_3wa(what3words.Coordinates(X, Y))
-    print(res)
+    print(res["words"])
 
     # Um Worte in Koordinaten umzuwandeln
     # res = geocoder.convert_to_coordinates('prom.cape.pump')
