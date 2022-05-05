@@ -213,8 +213,8 @@ def decrypt():
 @app.route("/getGeodata", methods=['POST'])
 def getGeodata():
     json_data = request.get_json()
-    X = json_data["longitude"]
-    Y = json_data["latitude"]
+    X = json_data["coords"]["longitude"]
+    Y = json_data["coords"]["latitude"]
 
     print("X: " + str(X))
     print("Y:" + str(Y))
