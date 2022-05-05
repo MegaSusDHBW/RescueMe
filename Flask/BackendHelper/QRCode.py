@@ -8,7 +8,7 @@ def generateQRCode(encryptedJSON):
     qr = qrcode.make(encryptedJSON)
 
     try:
-        #qr.save('BackendHelper/QR/qrcode.png')
+        qr.save('BackendHelper/QR/qrcode.png')
         return qr
     except:
         #qr.save('Flask/BackendHelper/QR/qrcode.png')

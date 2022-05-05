@@ -12,6 +12,7 @@ from Flask.BackendHelper.crypt import generateKeypair, encryptData, decryptData
 from Flask.BackendHelper.hash import hashPassword, generateSalt
 from Models import User
 from Models.InitDatabase import *
+import imageio
 
 # Für lokales Windows template_folder=templates
 app = Flask(__name__, template_folder='../templates')
@@ -25,6 +26,7 @@ login_manager.init_app(app)
 
 dict_emergencycontact = {}
 dict_healthdata = {}
+
 
 @login_manager.user_loader
 def load_user(id):
@@ -147,8 +149,7 @@ def getEmergencyContact():
             "email": email
         }
 
-
-        #TODO toDB
+        # TODO toDB
         return jsonify(response="Notfallkontakt angelegt"), 200
     except:
         return jsonify(response="Fehler beim Anlegen des Notfallkontakts"), 404
@@ -171,7 +172,7 @@ def getHealthData():
             "bloodgroup": bloodGroup
         }
 
-        #TODO toDB
+        # TODO toDB
         return jsonify(response="Gesundheitsdaten erhalten"), 200
     except:
         return jsonify(response="Fehler beim Anlegen der Gesundheitsdaten"), 404
@@ -186,12 +187,14 @@ def encrypt():
     # data = '{"name": "Hans", "alter": 50}'
     # data = json.dumps(data).encode('utf-8')
 
-    #fernet = generateKeypair(publicKey)
-    #encryptedJSON = encryptData(dict, fernet)
-    #print(encryptedJSON)
+    # fernet = generateKeypair(publicKey)
+    # encryptedJSON = encryptData(dict, fernet)
+    # print(encryptedJSON)
 
     qrcode = generateQRCode(qrcode_dict)
-    return send_file(qrcode, mimetype='image/png'), 200
+    image = imageio.v2.imread('BackendHelper/QR/qrcode.png')
+
+    return send_file(image, mimetype='image/png'), 200
 
 
 @app.route("/decrypt", methods=['GET', 'POST'])
