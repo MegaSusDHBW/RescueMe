@@ -190,8 +190,8 @@ def encrypt():
     #encryptedJSON = encryptData(dict, fernet)
     #print(encryptedJSON)
 
-    generateQRCode(qrcode_dict)
-    return qrcode_dict, 200
+    qrcode = generateQRCode(qrcode_dict)
+    return qrcode, 200
 
 
 @app.route("/decrypt", methods=['GET', 'POST'])
