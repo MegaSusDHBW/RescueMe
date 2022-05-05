@@ -138,16 +138,14 @@ def getEmergencyContact():
         birhtdate = contact_json["birthDate"]
         phonenumber = contact_json["phoneNumber"]
         email = contact_json["email"]
-        emailUser = contact_json["emailUser"]
+        user_mail = contact_json["userMail"]
 
-        user = User.User.query.filter_by(email=emailUser).first()
+        user = User.User.query.filter_by(email=user_mail).first()
         if user:
             new_emergencycontact = EmergencyContact(firstname=firstname, lastname=lastname, birhtdate=birhtdate,
-                                                    phonenumber=phonenumber, email=email)
+                                                    phonenumber=phonenumber, email=email, user_id=user.id)
             db.session.add(new_emergencycontact)
             db.session.commit()
-
-
         else:
             return jsonify(response="User nicht vorhanden"), 404
 
@@ -160,8 +158,6 @@ def getEmergencyContact():
             "phonenumber": phonenumber,
             "email": email
         }
-
-
 
         return jsonify(response="Notfallkontakt angelegt"), 200
     except:
@@ -177,6 +173,16 @@ def getHealthData():
         lastname = healthdata_json["lastName"]
         organDonorState = healthdata_json["organDonorState"]
         bloodGroup = healthdata_json["bloodGroup"]
+        user_mail = healthdata_json["userMail"]
+
+        user = User.User.query.filter_by(email=user_mail).first()
+        if user:
+            new_healthdata = HealthData(firstname=firstname, lastname=lastname, organDonorState=organDonorState,
+                                                    bloodGroup=bloodGroup, user_id=user.id)
+            db.session.add(new_healthdata)
+            db.session.commit()
+        else:
+            return jsonify(response="User nicht vorhanden"), 404
 
         dict_healthdata = {
             "firstname": firstname,
@@ -184,10 +190,6 @@ def getHealthData():
             "organdonorstate": organDonorState,
             "bloodgroup": bloodGroup
         }
-
-        new_healthdata = HealthData(firstname=firstname, lastname=lastname, organDonorState=organDonorState, bloodGroup=bloodGroup)
-        db.session.add(new_healthdata)
-        db.session.commit()
 
         return jsonify(response="Gesundheitsdaten erhalten"), 200
     except:
