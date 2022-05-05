@@ -2,7 +2,7 @@ import json
 
 import rsa
 import what3words as what3words
-from flask import render_template, Flask, request, redirect, url_for, jsonify
+from flask import render_template, Flask, request, redirect, url_for, jsonify, send_file
 from flask_cors import cross_origin
 from flask_login import login_user, login_required, logout_user, LoginManager
 
@@ -191,7 +191,7 @@ def encrypt():
     #print(encryptedJSON)
 
     qrcode = generateQRCode(qrcode_dict)
-    return qrcode, 200
+    return send_file(qrcode, mimetype='image/png'), 200
 
 
 @app.route("/decrypt", methods=['GET', 'POST'])
