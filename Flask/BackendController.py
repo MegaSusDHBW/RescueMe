@@ -10,9 +10,9 @@ from Flask.BackendHelper.DBHelper import *
 from Flask.BackendHelper.QRCode import generateQRCode
 from Flask.BackendHelper.crypt import decryptData
 from Flask.BackendHelper.hash import hashPassword, generateSalt
-from Models import User
 from Models import EmergencyContact
 from Models import HealthData
+from Models import User
 from Models.InitDatabase import *
 
 # Für lokales Windows template_folder=templates
@@ -142,14 +142,14 @@ def getEmergencyContact():
 
         user = User.User.query.filter_by(email=user_mail).first()
         if user:
-            new_emergencycontact = EmergencyContact.EmergencyContact(firstname=firstname, lastname=lastname, birthdate=birthdate,
-                                                    phonenumber=phonenumber, email=email, user_id=user.id)
+            new_emergencycontact = EmergencyContact.EmergencyContact(firstname=firstname, lastname=lastname,
+                                                                     birthdate=birthdate,
+                                                                     phonenumber=phonenumber, email=email,
+                                                                     user_id=user.id)
             db.session.add(new_emergencycontact)
             db.session.commit()
         else:
             return jsonify(response="User nicht vorhanden"), 404
-
-
 
         dict_emergencycontact = {
             "firstnameEC": firstname,
@@ -177,8 +177,9 @@ def getHealthData():
 
         user = User.User.query.filter_by(email=user_mail).first()
         if user:
-            new_healthdata = HealthData.HealthData(firstname=firstname, lastname=lastname, organDonorState=organDonorState,
-                                                    bloodGroup=bloodGroup, user_id=user.id)
+            new_healthdata = HealthData.HealthData(firstname=firstname, lastname=lastname,
+                                                   organDonorState=organDonorState,
+                                                   bloodGroup=bloodGroup, user_id=user.id)
             db.session.add(new_healthdata)
             db.session.commit()
         else:
@@ -204,12 +205,13 @@ def encrypt():
     qrcode_dict.update(dict_healthdata)
     qrcode_dict.update(dict_emergencycontact)
 
-    results = db.session.query(User.User, HealthData.HealthData, EmergencyContact.EmergencyContact).join(HealthData.HealthData).join(EmergencyContact.EmergencyContact).filter(User.User.email == user_mail).first()
-    print(str(results))
-    #q = db.select([user, healthData, emergencyContact]).where(db.and_(user.idHealthData == healthData.id, user.idEmergencyContact == emergencyContact.id, user.email == user_mail ))
-    #print(q)
+    results = db.session.query(User.User, HealthData.HealthData, EmergencyContact.EmergencyContact).join(
+        HealthData.HealthData).join(EmergencyContact.EmergencyContact).filter(User.User.email == user_mail).first()
 
-    #TODO dict_healthdata von DB auslesen und als dict in das qrcode-dict updaten
+    qrcode_dict.update({"firstname": results[1].firstname})
+    qrcode_dict.update({"lastname": results[1].lastname})
+
+
 
     # data = '{"name": "Hans", "alter": 50}'
     # data = json.dumps(data).encode('utf-8')
@@ -218,7 +220,7 @@ def encrypt():
     # encryptedJSON = encryptData(dict, fernet)
     # print(encryptedJSON)
 
-    #TODO
+    # TODO
     qrcode = generateQRCode(qrcode_dict)
     image = 'BackendHelper/QR/qrcode.png'
 
@@ -257,9 +259,11 @@ def getGeodata():
     except:
         return jsonify(words="Fehler beim Umwandeln der Koordinaten in What3Words"), 404
 
+
 @app.after_request
 def returnStatusCode(response):
     return response
+
 
 if __name__ == "__main__":
     app.run()
