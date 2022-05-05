@@ -135,7 +135,7 @@ def getEmergencyContact():
         phonenumber = contact_json["phoneNumber"]
         email = contact_json["email"]
 
-        print(contact_json)
+        #TODO toDB
         return jsonify(response="Notfallkontakt angelegt"), 200
     except:
         return jsonify(response="Fehler beim Anlegen des Notfallkontakts"), 404
@@ -144,9 +144,17 @@ def getEmergencyContact():
 @app.route("/encrypt/gesundheitsdaten", methods=['POST'])
 def getHealthData():
     healthdata_json = request.get_json()
+    try:
+        firstname = healthdata_json["firstName"]
+        lastname = healthdata_json["lastName"]
+        organDonorState = healthdata_json["organDonorState"]
+        bloodGroup = healthdata_json["bloodGroup"]
 
-    print(healthdata_json)
-    return jsonify(response="Gesundheitsdaten erhalten")
+        #TODO toDB
+        return jsonify(response="Gesundheitsdaten erhalten"), 200
+    except:
+        return jsonify(response="Fehler beim Anlegen der Gesundheitsdaten"), 404
+
 
 
 def encrypt(emergencyContact, healthData):
