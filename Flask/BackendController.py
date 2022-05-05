@@ -207,12 +207,12 @@ def encrypt():
 
     q = db.session.query(
         User.User, HealthData.HealthData, EmergencyContact.EmergencyContact
+    ).join(
+        EmergencyContact.EmergencyContact, User.User.idEmergencyContact == EmergencyContact.EmergencyContact.id
+    ).join(
+        HealthData.HealthData, User.User.idHealthData == HealthData.HealthData.id
     ).filter_by(
         User.User.email == user_mail
-    ).join(
-        EmergencyContact.EmergencyContact
-    ).join(
-        HealthData.HealthData
     ).first()
 
     qe = db.session.query(User.User.email).all()
