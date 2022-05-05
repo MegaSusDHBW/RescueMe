@@ -198,9 +198,23 @@ def getHealthData():
 
 @app.route("/encrypt/qrcode", methods=['GET'])
 def encrypt():
+    user_mail = request.args['user_mail']
+
     qrcode_dict = {}
     qrcode_dict.update(dict_healthdata)
     qrcode_dict.update(dict_emergencycontact)
+
+    q = db.session.query(
+        User, HealthData, EmergencyContact,
+    ).filter(
+        User.email == user_mail,
+    ).filter(
+        User.idHealthData == HealthData.id,
+    ).filter(
+        User.idEmergencyContact == EmergencyContact.id,
+    ).all()
+
+    print(q)
 
     #TODO dict_healthdata von DB auslesen und als dict in das qrcode-dict updaten
 
