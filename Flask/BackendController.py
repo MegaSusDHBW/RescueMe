@@ -2,7 +2,7 @@ import json
 
 import rsa
 import what3words as what3words
-from flask import render_template, Flask, request, redirect, url_for, make_response
+from flask import render_template, Flask, request, redirect, url_for, jsonify
 from flask_cors import cross_origin
 from flask_login import login_user, login_required, logout_user, LoginManager
 
@@ -23,15 +23,19 @@ login_manager = LoginManager()
 login_manager.login_view = 'login'
 login_manager.init_app(app)
 
+
 @login_manager.user_loader
 def load_user(id):
     return User.User.query.get(int(id))
 
+
 publicKey, privateKey = rsa.newkeys(512)
+
 
 @app.route("/")
 def main():
     return render_template('index.html')
+
 
 @app.route("/home", methods=['GET', 'POST'])
 @login_required
@@ -49,9 +53,9 @@ def sign_up():
         email = json_data['email']
         password = json_data['password']
         passwordConfirm = json_data['passwordConfirm']
-        #email = request.form.get('email')
-        #passwordConfirm = request.form.get('passwordConfirm')
-        #password = request.form.get('password')
+        # email = request.form.get('email')
+        # passwordConfirm = request.form.get('passwordConfirm')
+        # password = request.form.get('password')
 
         user = User.User.query.filter_by(email=email).first()
 
@@ -76,8 +80,8 @@ def login():
         json_data = request.get_json()
         email = json_data['email']
         password = json_data['password']
-        #email = request.form.get('email')
-        #password = request.form.get('password')
+        # email = request.form.get('email')
+        # password = request.form.get('password')
 
         user = User.User.query.filter_by(email=email).first()
 
@@ -97,6 +101,7 @@ def login():
         else:
             print('Error')
     return render_template('login.html')
+
 
 @app.route("/delete-user", methods=['GET', 'POST'])
 @cross_origin()
@@ -119,13 +124,41 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
-@app.route("/encrypt", methods=['GET', 'POST'])
-def encrypt():
-    data = '{"name": "Hans", "alter": 50}'
-    data = json.dumps(data).encode('utf-8')
+
+@app.route("/encrypt/notfallkontakt", methods=['POST'])
+def getEmergencyContact():
+    contact_json = request.get_json()
+    try:
+        firstname = contact_json["firstName"]
+        lastname = contact_json["lastName"]
+        birhtdate = contact_json["birthDate"]
+        phonenumber = contact_json["phoneNumber"]
+        email = contact_json["email"]
+
+        print(contact_json)
+        return jsonify(response="Notfallkontakt angelegt"), 200
+    except:
+        return jsonify(response="Fehler beim Anlegen des Notfallkontakts"), 404
+
+
+@app.route("/encrypt/gesundheitsdaten", methods=['POST'])
+def getHealthData():
+    healthdata_json = request.get_json()
+
+    print(healthdata_json)
+    return jsonify(response="Gesundheitsdaten erhalten")
+
+
+def encrypt(emergencyContact, healthData):
+    dict = {}
+    dict.update(healthData)
+    dict.update(emergencyContact)
+
+    # data = '{"name": "Hans", "alter": 50}'
+    # data = json.dumps(data).encode('utf-8')
 
     fernet = generateKeypair(publicKey)
-    encryptedJSON = encryptData(data, fernet)
+    encryptedJSON = encryptData(dict, fernet)
     print(encryptedJSON)
 
     generateQRCode(encryptedJSON)
@@ -151,8 +184,8 @@ def getGeodata():
     X = json_data["longitude"]
     Y = json_data["latitude"]
 
-    print("X: " +str(X))
-    print("Y:" +str(Y))
+    print("X: " + str(X))
+    print("Y:" + str(Y))
 
     # public
     geocoder = what3words.Geocoder("what3words-api-key")
@@ -167,9 +200,11 @@ def getGeodata():
     # res = geocoder.convert_to_coordinates('prom.cape.pump')
     # print(res)
 
+
 @app.after_request
 def returnStatusCode(response):
     return response
+
 
 # Pfusch aber lassen wir mal so
 if __name__ == "__main__":
