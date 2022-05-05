@@ -24,6 +24,7 @@ login_manager.login_view = 'login'
 login_manager.init_app(app)
 
 
+
 @login_manager.user_loader
 def load_user(id):
     return User.User.query.get(int(id))
@@ -127,6 +128,8 @@ def logout():
 
 @app.route("/encrypt/notfallkontakt", methods=['POST'])
 def getEmergencyContact():
+    global dict_emergencycontact
+
     contact_json = request.get_json()
     try:
         firstname = contact_json["firstName"]
@@ -134,6 +137,15 @@ def getEmergencyContact():
         birhtdate = contact_json["birthDate"]
         phonenumber = contact_json["phoneNumber"]
         email = contact_json["email"]
+
+        dict_emergencycontact = {
+            "firstnameEC": firstname,
+            "lastnameEC": lastname,
+            "birthdate": birhtdate,
+            "phonenumber": phonenumber,
+            "email": email
+        }
+
 
         #TODO toDB
         return jsonify(response="Notfallkontakt angelegt"), 200
@@ -143,6 +155,7 @@ def getEmergencyContact():
 
 @app.route("/encrypt/gesundheitsdaten", methods=['POST'])
 def getHealthData():
+    global dict_healthdata
     healthdata_json = request.get_json()
     try:
         firstname = healthdata_json["firstName"]
@@ -150,27 +163,34 @@ def getHealthData():
         organDonorState = healthdata_json["organDonorState"]
         bloodGroup = healthdata_json["bloodGroup"]
 
+        dict_healthdata = {
+            "firstname": firstname,
+            "lastname": lastname,
+            "organdonorstate": organDonorState,
+            "bloodgroup": bloodGroup
+        }
+
         #TODO toDB
         return jsonify(response="Gesundheitsdaten erhalten"), 200
     except:
         return jsonify(response="Fehler beim Anlegen der Gesundheitsdaten"), 404
 
 
-
-def encrypt(emergencyContact, healthData):
-    dict = {}
-    dict.update(healthData)
-    dict.update(emergencyContact)
+@app.route("/encrypt/qrcode", methods=['GET'])
+def encrypt():
+    qrcode_dict = {}
+    qrcode_dict.update(dict_healthdata)
+    qrcode_dict.update(dict_emergencycontact)
 
     # data = '{"name": "Hans", "alter": 50}'
     # data = json.dumps(data).encode('utf-8')
 
-    fernet = generateKeypair(publicKey)
-    encryptedJSON = encryptData(dict, fernet)
-    print(encryptedJSON)
+    #fernet = generateKeypair(publicKey)
+    #encryptedJSON = encryptData(dict, fernet)
+    #print(encryptedJSON)
 
-    generateQRCode(encryptedJSON)
-    return encryptedJSON
+    generateQRCode(qrcode_dict)
+    return qrcode_dict, 200
 
 
 @app.route("/decrypt", methods=['GET', 'POST'])
