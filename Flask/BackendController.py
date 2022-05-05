@@ -11,8 +11,8 @@ from Flask.BackendHelper.QRCode import generateQRCode
 from Flask.BackendHelper.crypt import decryptData
 from Flask.BackendHelper.hash import hashPassword, generateSalt
 from Models import User
-from Models.EmergencyContact import EmergencyContact
-from Models.HealthData import HealthData
+from Models import EmergencyContact
+from Models import HealthData
 from Models.InitDatabase import *
 
 # Für lokales Windows template_folder=templates
@@ -135,14 +135,14 @@ def getEmergencyContact():
     try:
         firstname = contact_json["firstName"]
         lastname = contact_json["lastName"]
-        birhtdate = contact_json["birthDate"]
+        birthdate = contact_json["birthDate"]
         phonenumber = contact_json["phoneNumber"]
         email = contact_json["email"]
         user_mail = contact_json["userMail"]
 
         user = User.User.query.filter_by(email=user_mail).first()
         if user:
-            new_emergencycontact = EmergencyContact(firstname=firstname, lastname=lastname, birhtdate=birhtdate,
+            new_emergencycontact = EmergencyContact.EmergencyContact(firstname=firstname, lastname=lastname, birthdate=birthdate,
                                                     phonenumber=phonenumber, email=email, user_id=user.id)
             db.session.add(new_emergencycontact)
             db.session.commit()
@@ -154,7 +154,7 @@ def getEmergencyContact():
         dict_emergencycontact = {
             "firstnameEC": firstname,
             "lastnameEC": lastname,
-            "birthdate": birhtdate,
+            "birthdate": birthdate,
             "phonenumber": phonenumber,
             "email": email
         }
@@ -177,7 +177,7 @@ def getHealthData():
 
         user = User.User.query.filter_by(email=user_mail).first()
         if user:
-            new_healthdata = HealthData(firstname=firstname, lastname=lastname, organDonorState=organDonorState,
+            new_healthdata = HealthData.HealthData(firstname=firstname, lastname=lastname, organDonorState=organDonorState,
                                                     bloodGroup=bloodGroup, user_id=user.id)
             db.session.add(new_healthdata)
             db.session.commit()
