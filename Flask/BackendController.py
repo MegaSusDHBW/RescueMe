@@ -204,8 +204,10 @@ def encrypt():
     qrcode_dict.update(dict_healthdata)
     qrcode_dict.update(dict_emergencycontact)
 
-    q = db.select([user, healthData, emergencyContact]).where(db.and_(user.idHealthData == healthData.id, user.idEmergencyContact == emergencyContact.id, user.email == user_mail ))
-    print(q)
+    results = db.session.query(User, HealthData, EmergencyContact).join(HealthData).join(EmergencyContact).filter(User.email == user_mail).all()
+    print(str(results))
+    #q = db.select([user, healthData, emergencyContact]).where(db.and_(user.idHealthData == healthData.id, user.idEmergencyContact == emergencyContact.id, user.email == user_mail ))
+    #print(q)
 
     #TODO dict_healthdata von DB auslesen und als dict in das qrcode-dict updaten
 
