@@ -215,6 +215,8 @@ def encrypt():
         User.User.email == user_mail,
     ).first()
 
+    qe = db.session.query(User.User.email).all()
+
 #    qrcode_dict.update({"firstname": results[1].firstname})
 #    qrcode_dict.update({"lastname": results[1].lastname})
 
