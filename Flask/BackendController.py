@@ -184,8 +184,8 @@ def getHealthData():
 
 @app.route("/encrypt/qrcode", methods=['GET'])
 def encrypt():
-    user_mail = request.args['email']
-    date = request.args['date']
+    user_mail = request.args.get('email')
+    date = request.args('date')
     user = User.User.query.filter_by(email=user_mail).first()
 
     qrcode_dict = {}
