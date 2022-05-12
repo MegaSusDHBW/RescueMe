@@ -203,10 +203,6 @@ def encrypt():
 
         user_info = q
 
-        # Nicht hardcoden TODO
-        for i in range(len(qrcode_dict.keys())):
-            qrcode_dict.update({str(user_info[i].name): user_info[i]})
-
         qrcode_dict.update({"email": user_info[0]})
         qrcode_dict.update({"firstname": user_info[1]})
         qrcode_dict.update({"lastname": user_info[2]})
