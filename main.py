@@ -11,12 +11,12 @@ data = json.dumps(data).encode('utf-8')
 
 #fernet mit key erzeugen
 #key ablegen
-fernet = generateKeypair()
+fernet = generateKeypair("bla")
 encryptedJSON = encryptData(data, fernet)
 print(encryptedJSON)
 
 #QRCode erzeugen
-generateQRCode(encryptedJSON)
+generateQRCode(encryptedJSON, "pa")
 
 #key holen
 with open('Flask/BackendHelper/Keys/filekey.key', 'rb') as filekey:
