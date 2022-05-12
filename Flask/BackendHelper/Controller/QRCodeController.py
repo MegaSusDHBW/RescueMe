@@ -18,7 +18,7 @@ class QRCodeController:
 
         try:
             fernet = generateFernet()
-            fernet_encrypted = encryptKeyForDb(publickey=os.getenv("PUBLICKEY").encode("utf-8"), key=pickle.dumps(fernet))
+            fernet_encrypted = encryptKeyForDb(publicKey=os.getenv("PUBLICKEY").encode("utf-8"), fernet=pickle.dumps(fernet))
 
             new_fernet = FernetKeys.FernetKeys(email=user_mail, fernet=fernet_encrypted)
             db.session.add(new_fernet)
@@ -27,9 +27,10 @@ class QRCodeController:
             result = db.session.query(User.User).filter(User.User.email == user_mail).all()
             user_info = result[0]
             createQRCode(generateDictForQRCode(user_info), fernet)
-            return send_file('static/img/qrcode.png', mimetype='image/png'), 200
-        except:
-            return send_file('static/img/dino.png', mimetype='image/png'), 200
+            return send_file('../static/img/qrcode.png', mimetype='image/png'), 200
+        except Exception as e:
+            print(e)
+            return send_file('../static/img/dino.png', mimetype='image/png'), 200
 
     @staticmethod
     def readQRCode():
