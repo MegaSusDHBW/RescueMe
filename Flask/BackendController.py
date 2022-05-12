@@ -201,20 +201,21 @@ def encrypt():
             EmergencyContact.EmergencyContact
         ).join(
             HealthData.HealthData
-        ).filter(user.email == user_mail)
-
-        user_info = q
-
-        qrcode_dict.update({"email": user_info[0]})
-        qrcode_dict.update({"firstname": user_info[1]})
-        qrcode_dict.update({"lastname": user_info[2]})
-        qrcode_dict.update({"organDonorState": user_info[3]})
-        qrcode_dict.update({"bloodGroup": user_info[4]})
-        qrcode_dict.update({"emergencyEmail": user_info[5]})
-        qrcode_dict.update({"emergencyFirstname": user_info[6]})
-        qrcode_dict.update({"emergencyLastname": user_info[7]})
-        qrcode_dict.update({"emergencyBirthday": user_info[8]})
-        qrcode_dict.update({"emergencyPhone": user_info[9]})
+        ).filter(user.email == user_mail).all()
+        a =db.session.query(User.User).filter(User.User.email == user_mail).all()
+        print(a)
+        user_info = a[0]
+        print(user_info)
+        qrcode_dict.update({"email": user_info.email})
+        qrcode_dict.update({"firstname": user_info.healthData.firstname})
+        qrcode_dict.update({"lastname": user_info.healthData.lastname})
+        qrcode_dict.update({"organDonorState": user_info.healthData.organDonorState})
+        qrcode_dict.update({"bloodGroup": user_info.healthData.bloodGroup})
+        qrcode_dict.update({"emergencyEmail": user_info.emergencyContact.email})
+        qrcode_dict.update({"emergencyFirstname": user_info.emergencyContact.firstname})
+        qrcode_dict.update({"emergencyLastname": user_info.emergencyContact.lastname})
+        qrcode_dict.update({"emergencyBirthday": user_info.emergencyContact.birthdate})
+        qrcode_dict.update({"emergencyPhone": user_info.emergencyContact.phonenumber})
 
         print(qrcode_dict)
 
