@@ -5,6 +5,7 @@ import what3words as what3words
 from flask import render_template, Flask, request, redirect, url_for, jsonify, send_file
 from flask_cors import cross_origin
 from flask_login import login_user, login_required, logout_user, LoginManager
+from sqlalchemy import join
 
 from Flask.BackendHelper.DBHelper import *
 from Flask.BackendHelper.QRCode import generateQRCode
@@ -186,40 +187,48 @@ def getHealthData():
 def encrypt():
     user_mail = request.args.get('email')
     date = request.args.get('date')
-    user = User.User.query.filter_by(email=user_mail).first()
 
-    qrcode_dict = {}
+    try:
+        user = User.User.query.filter_by(email=user_mail).first()
 
-    q = db.session.query(
-        User.User.email, HealthData.HealthData.firstname, HealthData.HealthData.lastname,
-        HealthData.HealthData.organDonorState, HealthData.HealthData.bloodGroup,
-        EmergencyContact.EmergencyContact.email, EmergencyContact.EmergencyContact.firstname,
-        EmergencyContact.EmergencyContact.lastname, EmergencyContact.EmergencyContact.birthdate,
-        EmergencyContact.EmergencyContact.phonenumber
-    ).join(
-        EmergencyContact.EmergencyContact
-    ).join(
-        HealthData.HealthData
-    ).filter(user.email == user_mail)
+        qrcode_dict = {}
 
-    user_info = q[0]
+        q = db.session.query(
+            User.User.email, HealthData.HealthData.firstname, HealthData.HealthData.lastname,
+            HealthData.HealthData.organDonorState, HealthData.HealthData.bloodGroup,
+            EmergencyContact.EmergencyContact.email, EmergencyContact.EmergencyContact.firstname,
+            EmergencyContact.EmergencyContact.lastname, EmergencyContact.EmergencyContact.birthdate,
+            EmergencyContact.EmergencyContact.phonenumber
+        ).join(
+            EmergencyContact.EmergencyContact
+        ).join(
+            HealthData.HealthData
+        ).filter(user.email == user_mail)
 
-    #Nicht hardcoden TODO
-    qrcode_dict.update({"email": user_info[0]})
-    qrcode_dict.update({"firstname": user_info[1]})
-    qrcode_dict.update({"lastname": user_info[2]})
-    qrcode_dict.update({"organDonorState": user_info[3]})
-    qrcode_dict.update({"bloodGroup": user_info[4]})
-    qrcode_dict.update({"emergencyEmail": user_info[5]})
-    qrcode_dict.update({"emergencyFirstname": user_info[6]})
-    qrcode_dict.update({"emergencyLastname": user_info[7]})
-    qrcode_dict.update({"emergencyBirthday": user_info[8]})
-    qrcode_dict.update({"emergencyPhone": user_info[9]})
+        user_info = q[0]
 
-    print(qrcode_dict)
+        # Nicht hardcoden TODO
+        for i in range(len(qrcode_dict.keys())):
+            qrcode_dict.update({str(list(qrcode_dict.keys())[i]): user_info[i]})
 
-    qrcode = generateQRCode(qrcode_dict)
-    image = 'BackendHelper/QR/qrcode.png'
+        qrcode_dict.update({"email": user_info[0]})
+        qrcode_dict.update({"firstname": user_info[1]})
+        qrcode_dict.update({"lastname": user_info[2]})
+        qrcode_dict.update({"organDonorState": user_info[3]})
+        qrcode_dict.update({"bloodGroup": user_info[4]})
+        qrcode_dict.update({"emergencyEmail": user_info[5]})
+        qrcode_dict.update({"emergencyFirstname": user_info[6]})
+        qrcode_dict.update({"emergencyLastname": user_info[7]})
+        qrcode_dict.update({"emergencyBirthday": user_info[8]})
+        qrcode_dict.update({"emergencyPhone": user_info[9]})
+
+        print(qrcode_dict)
+
+
+        qrcode = generateQRCode(qrcode_dict)
+        image = 'BackendHelper/QR/qrcode.png'
+    except:
+        image = 'BackendHelper/QR/dino.png'
 
     return send_file(image, mimetype='image/png'), 200
 
