@@ -13,7 +13,8 @@ def generateQRCode(dict, publickey):
     data = json.dumps(dict).encode('utf-8')
 
     encryptedJSON = encryptData(data, fernet)
-
+    print(encryptedJSON)
+    encryptedJSON = encryptedJSON.decode('utf-8')
     qr = qrcode.make(encryptedJSON)
 
     try:
