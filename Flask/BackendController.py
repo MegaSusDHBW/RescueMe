@@ -194,22 +194,18 @@ def encrypt():
         qrcode_dict = {}
 
         q = db.session.query(
-            User.User.email, HealthData.HealthData.firstname, HealthData.HealthData.lastname,
-            HealthData.HealthData.organDonorState, HealthData.HealthData.bloodGroup,
-            EmergencyContact.EmergencyContact.email, EmergencyContact.EmergencyContact.firstname,
-            EmergencyContact.EmergencyContact.lastname, EmergencyContact.EmergencyContact.birthdate,
-            EmergencyContact.EmergencyContact.phonenumber
+            User.User.email, HealthData.HealthData, EmergencyContact.EmergencyContact
         ).join(
             EmergencyContact.EmergencyContact
         ).join(
             HealthData.HealthData
         ).filter(user.email == user_mail)
 
-        user_info = q[0]
+        user_info = q
 
         # Nicht hardcoden TODO
         for i in range(len(qrcode_dict.keys())):
-            qrcode_dict.update({str(list(qrcode_dict.keys())[i]): user_info[i]})
+            qrcode_dict.update({str(user_info[i].name): user_info[i]})
 
         qrcode_dict.update({"email": user_info[0]})
         qrcode_dict.update({"firstname": user_info[1]})
@@ -224,10 +220,10 @@ def encrypt():
 
         print(qrcode_dict)
 
-
         qrcode = generateQRCode(qrcode_dict)
         image = 'BackendHelper/QR/qrcode.png'
-    except:
+    except Exception as e:
+        print(e)
         image = 'BackendHelper/QR/dino.png'
 
     return send_file(image, mimetype='image/png'), 200
