@@ -8,7 +8,7 @@ from flask_login import login_user, login_required, logout_user, LoginManager
 
 from Flask.BackendHelper.DBHelper import *
 from Flask.BackendHelper.QRCode import generateQRCode
-from Flask.BackendHelper.crypt import decryptData
+from Flask.BackendHelper.crypt import decryptData, generateKeypair
 from Flask.BackendHelper.hash import hashPassword, generateSalt
 from Models import EmergencyContact
 from Models import HealthData
@@ -25,16 +25,10 @@ login_manager = LoginManager()
 login_manager.login_view = 'login'
 login_manager.init_app(app)
 
-dict_emergencycontact = {}
-dict_healthdata = {}
-
 
 @login_manager.user_loader
 def load_user(id):
     return User.User.query.get(int(id))
-
-
-publicKey, privateKey = rsa.newkeys(512)
 
 
 @app.route("/")
@@ -208,7 +202,7 @@ def encrypt():
 
         print(qrcode_dict)
 
-        generateQRCode(qrcode_dict)
+        generateQRCode(qrcode_dict, publicKey)
         image = 'BackendHelper/QR/qrcode.png'
     except Exception as e:
         print(e)
@@ -251,4 +245,5 @@ def getGeodata():
 
 
 if __name__ == "__main__":
+    publicKey, privateKey = rsa.newkeys(512)
     app.run()
