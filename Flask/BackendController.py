@@ -183,7 +183,7 @@ def encrypt():
 
     try:
         qrcode_dict = {}
-        a =db.session.query(User.User).filter(User.User.email == user_mail).all()
+        a = db.session.query(User.User).filter(User.User.email == user_mail).all()
 
         print(a)
         user_info = a[0]
@@ -242,6 +242,39 @@ def getGeodata():
         return jsonify(words=res["words"]), 200
     except:
         return jsonify(words="Fehler beim Umwandeln der Koordinaten in What3Words"), 404
+
+
+@app.route("/getHealthData", methods=['GET'])
+def getHealthData():
+    user_email = request.args.get("email")
+
+    a = db.session.query(User.User).filter(User.User.email == user_email).all()
+    user_data = a[0]
+
+    healthDataJSON = {}
+    healthDataJSON.update({"firstname": user_data.healthData.firstname})
+    healthDataJSON.update({"lastname": user_data.healthData.lastname})
+    healthDataJSON.update({"organDonorState": user_data.healthData.organDonorState})
+    healthDataJSON.update({"bloodgroup": user_data.healthData.bloodGroup})
+
+    return jsonify(healthDataJSON), 200
+
+
+@app.route("/getEmergencyContact", methods=['GET'])
+def getHealthData():
+    user_email = request.args.get("email")
+
+    a = db.session.query(User.User).filter(User.User.email == user_email).all()
+    user_data = a[0]
+
+    emergencyContactJSON = {}
+    emergencyContactJSON.update({"emergencyEmail": user_data.emergencyContact.email})
+    emergencyContactJSON.update({"emergencyFirstname": user_data.emergencyContact.firstname})
+    emergencyContactJSON.update({"emergencyLastname": user_data.emergencyContact.lastname})
+    emergencyContactJSON.update({"emergencyBirthday": user_data.emergencyContact.birthdate})
+    emergencyContactJSON.update({"emergencyPhone": user_data.emergencyContact.phonenumber})
+
+    return jsonify(emergencyContactJSON), 200
 
 
 if __name__ == "__main__":
