@@ -5,7 +5,6 @@ import what3words as what3words
 from flask import render_template, Flask, request, redirect, url_for, jsonify, send_file
 from flask_cors import cross_origin
 from flask_login import login_user, login_required, logout_user, LoginManager
-from sqlalchemy import join
 
 from Flask.BackendHelper.DBHelper import *
 from Flask.BackendHelper.QRCode import generateQRCode
@@ -194,7 +193,10 @@ def encrypt():
         qrcode_dict = {}
 
         q = db.session.query(
-            User.User.email, HealthData.HealthData, EmergencyContact.EmergencyContact
+            User.User.email, HealthData.HealthData.firstname, HealthData.HealthData.lastname,
+            HealthData.HealthData.organDonorState, HealthData.HealthData.bloodGroup,
+            EmergencyContact.EmergencyContact.email, EmergencyContact.EmergencyContact.firstname,
+            EmergencyContact.EmergencyContact.lastname, EmergencyContact.EmergencyContact.birthdate, EmergencyContact.EmergencyContact.phonenumber
         ).join(
             EmergencyContact.EmergencyContact
         ).join(
