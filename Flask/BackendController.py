@@ -188,24 +188,13 @@ def encrypt():
     date = request.args.get('date')
 
     try:
-        user = User.User.query.filter_by(email=user_mail).first()
-
         qrcode_dict = {}
-
-        q = db.session.query(
-            User.User.email, HealthData.HealthData.firstname, HealthData.HealthData.lastname,
-            HealthData.HealthData.organDonorState, HealthData.HealthData.bloodGroup,
-            EmergencyContact.EmergencyContact.email, EmergencyContact.EmergencyContact.firstname,
-            EmergencyContact.EmergencyContact.lastname, EmergencyContact.EmergencyContact.birthdate, EmergencyContact.EmergencyContact.phonenumber
-        ).join(
-            EmergencyContact.EmergencyContact
-        ).join(
-            HealthData.HealthData
-        ).filter(user.email == user_mail).all()
         a =db.session.query(User.User).filter(User.User.email == user_mail).all()
+
         print(a)
         user_info = a[0]
         print(user_info)
+
         qrcode_dict.update({"email": user_info.email})
         qrcode_dict.update({"firstname": user_info.healthData.firstname})
         qrcode_dict.update({"lastname": user_info.healthData.lastname})
@@ -219,7 +208,7 @@ def encrypt():
 
         print(qrcode_dict)
 
-        qrcode = generateQRCode(qrcode_dict)
+        generateQRCode(qrcode_dict)
         image = 'BackendHelper/QR/qrcode.png'
     except Exception as e:
         print(e)
