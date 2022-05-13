@@ -61,3 +61,4 @@ class QRCodeController:
 
         # with open('BackendHelper/Keys/filekey.key', 'rb') as filekey:
         #    key = filekey.read()
+
