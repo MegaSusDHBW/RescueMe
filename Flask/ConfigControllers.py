@@ -3,7 +3,7 @@ from flask import Flask
 from flask_login import LoginManager
 
 from Models.InitDatabase import *
-from Models.User import User
+from Models import User
 from Flask.BackendHelper.Controller.DataController import DataController
 from Flask.BackendHelper.Controller.QRCodeController import QRCodeController
 from Flask.BackendHelper.Controller.UserController import UserController
@@ -16,7 +16,7 @@ app.config['SECRET_KEY'] = os.getenv('secret_key')
 app.config['SQLALCHEMY_DATABASE_URI'] = dbpath
 create_database(app=app)
 
-# LoginManager #TODO
+# LoginManager
 login_manager = LoginManager()
 login_manager.login_view = 'login'
 login_manager.init_app(app)

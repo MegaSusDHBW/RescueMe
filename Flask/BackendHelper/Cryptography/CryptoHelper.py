@@ -1,7 +1,6 @@
 import hashlib
 import os
 
-import rsa
 from Crypto.Cipher import PKCS1_OAEP
 from Crypto.PublicKey import RSA
 from cryptography.fernet import Fernet
