@@ -27,6 +27,8 @@ class QRCodeController:
             result = db.session.query(User.User).filter(User.User.email == user_mail).all()
             user_info = result[0]
             createQRCode(generateDictForQRCode(user_info), fernet)
+
+            print(generateDictForQRCode(user_info))
             return send_file('../static/img/qrcode.png', mimetype='image/png'), 200
         except Exception as e:
             print(e)
@@ -34,15 +36,20 @@ class QRCodeController:
 
     @staticmethod
     def readQRCode():
-        user_email = ""
-        INPUT = ""
+        user_email = request.args.get('email')
+        INPUT = request.args.get('input')
+
         result = db.session.query(FernetKeys.FernetKeys).filter(FernetKeys.FernetKeys.email == user_email).all()
         user_info = result[0]
 
-        fernet = user_info.fernet
-        fernet = pickle.loads(fernet)
 
-        fernet_decrypted = decryptKeyForDb(os.getenv('PRIVATEKEY'), fernet)
+
+        fernet = user_info.fernet
+        fernet_rsa_decrypted = decryptKeyForDb(os.getenv('PRIVATEKEY').encode("utf-8"), fernet)
+        fernet_decrypted = pickle.loads(fernet_rsa_decrypted)
+        print(fernet_decrypted)
+
+
 
         decryptedJSON = decryptData(INPUT, fernet_decrypted)
         data = json.loads(decryptedJSON)
