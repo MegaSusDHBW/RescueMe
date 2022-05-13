@@ -4,11 +4,11 @@ from flask_login import LoginManager
 
 from Models.InitDatabase import *
 from Models.User import User
-from _Flask.BackendHelper.Controller.DataController import DataController
-from _Flask.BackendHelper.Controller.QRCodeController import QRCodeController
-from _Flask.BackendHelper.Controller.UserController import UserController
-from _Flask.BackendHelper.Controller.ViewController import ViewController
-from _Flask.BackendHelper.DB.DBHelper import *
+from Flask.BackendHelper.Controller.DataController import DataController
+from Flask.BackendHelper.Controller.QRCodeController import QRCodeController
+from Flask.BackendHelper.Controller.UserController import UserController
+from Flask.BackendHelper.Controller.ViewController import ViewController
+from Flask.BackendHelper.DB.DBHelper import *
 
 # Für lokales Windows template_folder=templates
 app = Flask(__name__, template_folder='../templates')

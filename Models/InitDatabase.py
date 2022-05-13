@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from _Flask.BackendHelper.DB import DBHelper
+from Flask.BackendHelper.DB import DBHelper
 
 db = SQLAlchemy()
 

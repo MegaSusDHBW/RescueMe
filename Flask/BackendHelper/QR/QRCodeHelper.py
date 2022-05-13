@@ -2,7 +2,7 @@ import json
 
 import qrcode
 
-from _Flask.BackendHelper.Cryptography.CryptoHelper import encryptData
+from Flask.BackendHelper.Cryptography.CryptoHelper import encryptData
 
 
 def generateDictForQRCode(user_info):
@@ -35,5 +35,5 @@ def createQRCode(qrcode_dict, fernet):
     try:
         qr.save('../static/img/qrcode.png')
     except:
-        # qr.save('_Flask/BackendHelper/QR/qrcode.png')
+        # qr.save('Flask/BackendHelper/QR/qrcode.png')
         print("Fehler beim QR-Code-Erzeugen")

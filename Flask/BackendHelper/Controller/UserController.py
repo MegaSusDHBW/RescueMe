@@ -6,7 +6,7 @@ from flask_login import login_user, login_required, logout_user
 
 from Models import User
 from Models.InitDatabase import db
-from _Flask.BackendHelper.Cryptography.CryptoHelper import generateSalt, hashPassword
+from Flask.BackendHelper.Cryptography.CryptoHelper import generateSalt, hashPassword
 
 
 class UserController:

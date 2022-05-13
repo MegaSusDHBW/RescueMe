@@ -4,8 +4,8 @@ import pickle
 
 from flask import request, send_file
 
-from _Flask.BackendHelper.Cryptography.CryptoHelper import decryptData, generateFernet, encryptKeyForDb, decryptKeyForDb
-from _Flask.BackendHelper.QR.QRCodeHelper import generateDictForQRCode, createQRCode
+from Flask.BackendHelper.Cryptography.CryptoHelper import decryptData, generateFernet, encryptKeyForDb, decryptKeyForDb
+from Flask.BackendHelper.QR.QRCodeHelper import generateDictForQRCode, createQRCode
 from Models import User, FernetKeys
 from Models.InitDatabase import db
 
