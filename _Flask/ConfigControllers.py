@@ -1,17 +1,14 @@
-import ast
-import os
-
-import rsa
 from Crypto.PublicKey import RSA
 from flask import Flask
 from flask_login import LoginManager
 
-from Flask.BackendHelper.Controller.UserController import UserController
-from Flask.BackendHelper.Controller.ViewController import ViewController
-from Flask.BackendHelper.DB.DBHelper import *
-from Flask.BackendHelper.Controller.DataController import DataController
-from Flask.BackendHelper.Controller.QRCodeController import QRCodeController
 from Models.InitDatabase import *
+from Models.User import User
+from _Flask.BackendHelper.Controller.DataController import DataController
+from _Flask.BackendHelper.Controller.QRCodeController import QRCodeController
+from _Flask.BackendHelper.Controller.UserController import UserController
+from _Flask.BackendHelper.Controller.ViewController import ViewController
+from _Flask.BackendHelper.DB.DBHelper import *
 
 # Für lokales Windows template_folder=templates
 app = Flask(__name__, template_folder='../templates')
@@ -19,9 +16,16 @@ app.config['SECRET_KEY'] = os.getenv('secret_key')
 app.config['SQLALCHEMY_DATABASE_URI'] = dbpath
 create_database(app=app)
 
+# LoginManager #TODO
 login_manager = LoginManager()
 login_manager.login_view = 'login'
 login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def load_user(id):
+    return User.User.query.get(int(id))
+
 
 '''ViewController'''
 # @app.route("/")

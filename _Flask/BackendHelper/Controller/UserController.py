@@ -2,16 +2,14 @@ import os
 
 from flask import request, redirect, render_template, url_for
 from flask_cors import cross_origin
+from flask_login import login_user, login_required, logout_user
 
-from flask_login import login_user, login_required, logout_user, login_manager
-
-from Models import EmergencyContact, User, HealthData
-from Flask.BackendHelper.Cryptography.CryptoHelper import generateSalt, hashPassword
+from Models import User
 from Models.InitDatabase import db
+from _Flask.BackendHelper.Cryptography.CryptoHelper import generateSalt, hashPassword
 
 
 class UserController:
-
     @staticmethod
     @cross_origin()
     def sign_up():
@@ -84,8 +82,3 @@ class UserController:
     def logout():
         logout_user()
         return redirect(url_for('login'))
-
-    #@login_manager.user_loader
-    #def load_user(id):
-    #    return User.User.query.get(int(id))
-
