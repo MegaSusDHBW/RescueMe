@@ -17,19 +17,32 @@ class QRCodeController:
         date = request.args.get('date')
 
         try:
-            fernet = generateFernet()
-            fernet_encrypted = encryptKeyForDb(publicKey=os.getenv("PUBLICKEY").encode("utf-8"), fernet=pickle.dumps(fernet))
+            if db.session.query(FernetKeys.FernetKeys.email).filter_by(email=user_mail).first() is not None:
+                fernerQuery = db.session.query(FernetKeys.FernetKeys).filter(FernetKeys.FernetKeys.email == user_mail).all()
+                fernerQuery = fernerQuery[0]
 
-            new_fernet = FernetKeys.FernetKeys(email=user_mail, fernet=fernet_encrypted)
-            db.session.add(new_fernet)
-            db.session.commit()
+                fernet = fernerQuery.fernet
+                decryptedFernet = decryptKeyForDb(privateKey=os.getenv("PRIVATEKEY"), encryptedFernet=fernet)
 
-            result = db.session.query(User.User).filter(User.User.email == user_mail).all()
-            user_info = result[0]
-            createQRCode(generateDictForQRCode(user_info), fernet)
+                result = db.session.query(User.User).filter(User.User.email == user_mail).all()
+                user_info = result[0]
+                createQRCode(generateDictForQRCode(user_info), decryptedFernet)
 
-            print(generateDictForQRCode(user_info))
-            return send_file('../static/img/qrcode.png', mimetype='image/png'), 200
+                return send_file('../static/img/qrcode.png', mimetype='image/png'), 200
+            else:
+                fernet = generateFernet()
+                fernet_encrypted = encryptKeyForDb(publicKey=os.getenv("PUBLICKEY").encode("utf-8"), fernet=pickle.dumps(fernet))
+
+                new_fernet = FernetKeys.FernetKeys(email=user_mail, fernet=fernet_encrypted)
+                db.session.add(new_fernet)
+                db.session.commit()
+
+                result = db.session.query(User.User).filter(User.User.email == user_mail).all()
+                user_info = result[0]
+                createQRCode(generateDictForQRCode(user_info), fernet)
+
+                print(generateDictForQRCode(user_info))
+                return send_file('../static/img/qrcode.png', mimetype='image/png'), 200
         except Exception as e:
             print(e)
             return send_file('../static/img/dino.png', mimetype='image/png'), 200
