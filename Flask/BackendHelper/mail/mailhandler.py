@@ -11,6 +11,7 @@ def send_mail(to, subject, body):
     # Send Mail to the given recipient
     helpdesk.send(to, subject, body)
 
+
 # Welcome Mail to a new user containing his/her username
 def welcome_mail(to, Name):
     # Send Welcome Mail to the given recipient
@@ -43,4 +44,21 @@ def pw_reset_mail(to, url):
       </body>
     </html>
     """.format(url)
+    send_mail(to, subject, body)
+
+
+def sendEmergencyMail(to, firstnameEmergency, lastnameEmergency, firstname, lastname, accidentplace, hospital):
+    subject = "Ihr Angehöriger hatte einen NOTFALL!"
+    body = """\
+        <html>
+          <head></head>
+          <body>
+            <p>Hallo {} {},<br>
+               {} {} hatte einen Notfall!<br>
+               Unfallort: {}<br>
+               Krankenhaus: {}<br>
+            </p>
+          </body>
+        </html>
+        """.format(firstnameEmergency, lastnameEmergency, firstname, lastname, accidentplace, hospital)
     send_mail(to, subject, body)

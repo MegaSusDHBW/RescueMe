@@ -30,6 +30,7 @@ def createQRCode(qrcode_dict, fernet):
 
     # bytes in string umwandeln
     encryptedJSON = encryptedJSON.decode('utf-8')
+    print(encryptedJSON)
     qr = qrcode.make(encryptedJSON)
 
     try:

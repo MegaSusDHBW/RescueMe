@@ -1,13 +1,13 @@
 import os
 
-from flask import request, redirect, render_template, url_for
+from flask import request, redirect, render_template, url_for, jsonify
 from flask_cors import cross_origin
 from flask_login import login_user, login_required, logout_user
 
-from Flask.BackendHelper.mail.mailhandler import pw_reset_mail, welcome_mail
+from Flask.BackendHelper.Cryptography.CryptoHelper import generateSalt, hashPassword
+from Flask.BackendHelper.mail.mailhandler import pw_reset_mail, welcome_mail, sendEmergencyMail
 from Models import User
 from Models.InitDatabase import db
-from Flask.BackendHelper.Cryptography.CryptoHelper import generateSalt, hashPassword
 
 
 class UserController:
@@ -116,15 +116,16 @@ class UserController:
             pepper = os.getenv('pepper')
             pepper = bytes(pepper, 'utf-8')
             password = hashPassword(salt + pepper, password)
-            #TODO
-            pw_reset_mail(email, "http://localhost:5000/change-password?email="+str(email)+"&password="+password.decode("iso8859_16"))
+            # TODO
+            pw_reset_mail(email,
+                          "http://localhost:5000/change-password?email=" + str(email) + "&password=" + password.decode(
+                              "iso8859_16"))
 
         return "tut"
 
-
     @staticmethod
     def forgetPassword():
-        #email confirmed
+        # email confirmed
         email = request.args.get("email")
         password = request.args.get("password").encode("utf-8")
 
@@ -142,4 +143,18 @@ class UserController:
         else:
             print("Fehler beim Passwortändern")
 
+    @staticmethod
+    def callEmergencyContact():
+        email = request.json["email"]
+        accidentplace = request.json["accidentplace"]
+        hospital = request.json["hospital"]
 
+        user = User.User.query.filter_by(email=email).first()
+        if user:
+            sendEmergencyMail(email, user.emergencyContact.firstname, user.emergencyContact.lastname,
+                              user.healthData.firstname, user.healthData.lastname, accidentplace, hospital)
+
+            return jsonify(response="Angehörige wurden informiert"), 200
+        else:
+            print("User nicht gefunden")
+            return jsonify(response="Angehöriger konnte NICHT informiert werden")
