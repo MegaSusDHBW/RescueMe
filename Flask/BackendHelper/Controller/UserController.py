@@ -117,7 +117,7 @@ class UserController:
             pepper = bytes(pepper, 'utf-8')
             password = hashPassword(salt + pepper, password)
             #TODO
-            pw_reset_mail(email, "http:localhost:5000/change-password?email="+email+"&password="+password)
+            pw_reset_mail(email, "http:localhost:5000/change-password?email="+str(email)+"&password="+str(password))
 
     @staticmethod
     def forgetPassword():
