@@ -35,8 +35,9 @@ class DataController:
                 else:
                     user_id = User.User.query.filter_by(email=user_mail).first()
                     user_id = user_id.emergencyContact.id
+
                     db.session.query(EmergencyContact.EmergencyContact).filter(
-                        EmergencyContact.EmergencyContact.id == user_id).values(
+                        EmergencyContact.EmergencyContact.id == user_id).update(
                         {
                             EmergencyContact.EmergencyContact.email: email,
                             EmergencyContact.EmergencyContact.firstname: firstname,
