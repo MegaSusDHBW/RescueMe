@@ -36,12 +36,14 @@ class DataController:
                     user_id = User.User.query.filter_by(email=user_mail).first()
                     user_id = user_id.emergencyContact.id
                     db.session.query(EmergencyContact.EmergencyContact).filter(
-                        EmergencyContact.EmergencyContact.id == user_id).update(
-                        {EmergencyContact.EmergencyContact.email == email,
-                         EmergencyContact.EmergencyContact.firstname == firstname,
-                         EmergencyContact.EmergencyContact.lastname == lastname,
-                         EmergencyContact.EmergencyContact.phonenumber == phonenumber,
-                         EmergencyContact.EmergencyContact.birthdate == birthdate},
+                        EmergencyContact.EmergencyContact.id == user_id).values(
+                        {
+                            EmergencyContact.EmergencyContact.email: email,
+                            EmergencyContact.EmergencyContact.firstname: firstname,
+                            EmergencyContact.EmergencyContact.lastname: lastname,
+                            EmergencyContact.EmergencyContact.phonenumber: phonenumber,
+                            EmergencyContact.EmergencyContact.birthdate: birthdate
+                        },
                         synchronize_session=False)
                     db.session.commit()
             else:
