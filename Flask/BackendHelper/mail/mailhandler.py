@@ -38,7 +38,7 @@ def pw_reset_mail(to, url):
       <body>
         <p>Hallo,<br>
            Vielen Dank für ihre Anfrage.<br>
-           Um zurückzusetzen, hier klicken: {}<br>
+           Um zurückzusetzen, hier klicken: <a href={}>Link zum Passwort ändern</a><br>
         </p>
       </body>
     </html>

@@ -64,7 +64,7 @@ app.add_url_rule("/change-password", view_func=UserController.changePassword, me
 # forget PW
 app.add_url_rule("/forget-password", view_func=UserController.forgetPasswordSendMail, methods=['POST'])
 # confirm email
-app.add_url_rule("/change-password", view_func=UserController.forgetPassword, methods=['POST'])
+app.add_url_rule("/change-password", view_func=UserController.forgetPassword, methods=['GET'])
 
 
 if __name__ == "__main__":
