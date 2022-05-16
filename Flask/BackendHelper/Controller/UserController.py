@@ -117,7 +117,7 @@ class UserController:
             pepper = bytes(pepper, 'utf-8')
             password = hashPassword(salt + pepper, password)
             #TODO
-            pw_reset_mail(email, "http://localhost:5000/change-password?email="+str(email)+"&password="+str(password))
+            pw_reset_mail(email, "http://localhost:5000/change-password?email="+str(email)+"&password="+str(password.decode("utf-8")))
             #pw_reset_mail(email, 'http://web.de')
         return 200
 
@@ -126,7 +126,7 @@ class UserController:
     def forgetPassword():
         #email confirmed
         email = request.args.get("email")
-        password = request.args.get("password")
+        password = request.args.get("password").encode("utf-8")
 
         user = User.User.query.filter_by(email=email).first()
         if user:
@@ -138,7 +138,7 @@ class UserController:
                 synchronize_session=False)
             db.session.commit()
 
-            return render_template('forgetPassword.html')
+            return render_template("Passwort zurückgesetzt")
         else:
             print("Fehler beim Passwortändern")
 
