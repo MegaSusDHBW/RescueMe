@@ -64,6 +64,8 @@ app.add_url_rule("/login", view_func=UserController.login, methods=['GET', 'POST
 app.add_url_rule("/delete-user", view_func=UserController.delete_user, methods=['GET', 'POST'])
 # @app.route("/logout")
 app.add_url_rule("/logout", view_func=UserController.logout, methods=['GET', 'POST'])
+# change PW
+app.add_url_rule("/change-password", view_func=UserController.changePassword, methods=['POST'])
 
 if __name__ == "__main__":
     app.run()

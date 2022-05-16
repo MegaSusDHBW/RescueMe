@@ -82,3 +82,22 @@ class UserController:
     def logout():
         logout_user()
         return redirect(url_for('login'))
+
+    @staticmethod
+    def changePassword():
+        email = request.json["email"]
+        password = request.json["password"]
+        passwordConfirm = request.json["passwordConfirm"]
+
+        user = User.User.query.filter_by(email=email).first()
+        if user:
+            db.session.query(User.User).filter(
+                User.User.email == email).update(
+                {
+                    User.User.password: password,
+                },
+                synchronize_session=False)
+            db.session.commit()
+        else:
+            print("Fehler beim Passwortändern")
+
