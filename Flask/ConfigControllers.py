@@ -66,7 +66,7 @@ app.add_url_rule("/logout", view_func=UserController.logout, methods=['GET', 'PO
 if __name__ == "__main__":
     publicKey, privateKey = rsa.newkeys(512)
 
-    os.environ["PRIVATEKEY"] = pickle.dumps(privateKey).decode("utf-8")
-    os.environ["PUBLICKEY"] = pickle.dumps(publicKey).decode("utf-8")
+    os.environ["PRIVATEKEY"] = pickle.dumps(privateKey).decode("iso8859_16")
+    os.environ["PUBLICKEY"] = pickle.dumps(publicKey).decode("iso8859_16")
 
     app.run()

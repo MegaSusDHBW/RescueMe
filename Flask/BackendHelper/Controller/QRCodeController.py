@@ -23,7 +23,7 @@ class QRCodeController:
                 fernetQuery = fernetQuery[0]
 
                 fernet = fernetQuery.fernet
-                decryptedFernet = decryptKeyForDb(privateKey=pickle.loads(os.getenv("PRIVATEKEY").encode("utf-8")),
+                decryptedFernet = decryptKeyForDb(privateKey=pickle.loads(os.getenv("PRIVATEKEY").encode("iso8859_16")),
                                                   encryptedFernet=fernet)
 
                 result = db.session.query(User.User).filter(User.User.email == user_mail).all()
