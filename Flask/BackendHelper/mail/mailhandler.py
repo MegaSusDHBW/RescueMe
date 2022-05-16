@@ -42,5 +42,5 @@ def pw_reset_mail(to, url):
         </p>
       </body>
     </html>
-    """
+    """.format(url)
     send_mail(to, subject, body)

@@ -118,7 +118,7 @@ class UserController:
             password = hashPassword(salt + pepper, password)
             #TODO
             pw_reset_mail(email, "http://localhost:5000/change-password?email="+str(email)+"&password="+str(password))
-
+            #pw_reset_mail(email, 'http://web.de')
         return 200
 
 

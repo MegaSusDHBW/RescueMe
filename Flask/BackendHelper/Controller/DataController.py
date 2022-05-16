@@ -44,8 +44,7 @@ class DataController:
                             EmergencyContact.EmergencyContact.lastname: lastname,
                             EmergencyContact.EmergencyContact.phonenumber: phonenumber,
                             EmergencyContact.EmergencyContact.birthdate: birthdate
-                        },
-                        synchronize_session=False)
+                        })
                     db.session.commit()
             else:
                 return jsonify(response="User nicht vorhanden"), 404
