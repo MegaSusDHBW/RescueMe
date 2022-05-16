@@ -67,11 +67,26 @@ class DataController:
 
             user = User.User.query.filter_by(email=user_mail).first()
             if user:
-                new_healthdata = HealthData.HealthData(firstname=firstname, lastname=lastname,
-                                                       organDonorState=organDonorState,
-                                                       bloodGroup=bloodGroup, user_id=user.id)
-                db.session.add(new_healthdata)
-                db.session.commit()
+                if user.emergencyContact is None:
+                    new_healthdata = HealthData.HealthData(firstname=firstname, lastname=lastname,
+                                                           organDonorState=organDonorState,
+                                                           bloodGroup=bloodGroup, user_id=user.id)
+                    db.session.add(new_healthdata)
+                    db.session.commit()
+                else:
+                    user_id = User.User.query.filter_by(email=user_mail).first()
+                    user_id = user_id.emergencyContact.id
+
+                    db.session.query(HealthData.HealthData).filter(
+                        HealthData.HealthData.id == user_id).update(
+                        {
+                            HealthData.HealthData.firstname: firstname,
+                            HealthData.HealthData.lastname: lastname,
+                            HealthData.HealthData.organDonorState: organDonorState,
+                            HealthData.HealthData.bloodGroup: bloodGroup
+                        },
+                        synchronize_session=False)
+                    db.session.commit()
             else:
                 return jsonify(response="User nicht vorhanden"), 404
 
