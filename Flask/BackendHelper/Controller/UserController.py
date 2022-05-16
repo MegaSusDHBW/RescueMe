@@ -138,7 +138,7 @@ class UserController:
                 synchronize_session=False)
             db.session.commit()
 
-            return render_template('resetPassword.html')
+            return render_template('forgetPassword.html')
         else:
             print("Fehler beim Passwortändern")
 
