@@ -33,7 +33,7 @@ class QRCodeController:
                 return send_file('../static/img/qrcode.png', mimetype='image/png'), 200
             else:
                 fernet = generateFernet()
-                fernet_encrypted = encryptKeyForDb(publicKey=os.getenv("PUBLICKEY").encode("utf-8"),
+                fernet_encrypted = encryptKeyForDb(publicKey=pickle.loads(os.getenv("PRIVATEKEY").encode("iso8859_16")),
                                                    fernet=pickle.dumps(fernet))
 
                 new_fernet = FernetKeys.FernetKeys(email=user_mail, fernet=fernet_encrypted)
