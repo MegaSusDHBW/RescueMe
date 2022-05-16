@@ -111,7 +111,7 @@ class UserController:
         password = request.json["password"]
 
         #TODO
-        pw_reset_mail(email, "http:localhost:5000/change-password?email="+email+"&"+password)
+        pw_reset_mail(email, "http:localhost:5000/change-password?email="+email+"&password="+password)
 
     @staticmethod
     def forgetPassword():
