@@ -4,6 +4,7 @@ from flask import request, redirect, render_template, url_for
 from flask_cors import cross_origin
 from flask_login import login_user, login_required, logout_user
 
+from Flask.BackendHelper.mail.mailhandler import pw_reset_mail, welcome_mail
 from Models import User
 from Models.InitDatabase import db
 from Flask.BackendHelper.Cryptography.CryptoHelper import generateSalt, hashPassword
@@ -29,6 +30,9 @@ class UserController:
                 new_user = User.User(email=email, salt=salt, password=db_password)
                 db.session.add(new_user)
                 db.session.commit()
+
+                welcome_mail(email, "Hans Peter")
+
                 return redirect(url_for('login'))
             else:
                 print('Error')
@@ -100,4 +104,13 @@ class UserController:
             db.session.commit()
         else:
             print("Fehler beim Passwortändern")
+
+    @staticmethod
+    def forgetPasswordSendMail():
+        email = request.json["email"]
+        password = request.json["password"]
+
+        pw_reset_mail(email, password)
+
+
 
