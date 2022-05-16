@@ -10,7 +10,9 @@ from Models import User
 from Models.InitDatabase import *
 
 # Für lokales Windows template_folder=templates
-app = Flask(__name__, template_folder='../templates')
+project_root = os.path.dirname(__file__)
+template_path = os.path.join(project_root, 'static/templates')
+app = Flask(__name__, template_folder=template_path)
 app.config['SECRET_KEY'] = os.getenv('secret_key')
 app.config['SQLALCHEMY_DATABASE_URI'] = dbpath
 create_database(app=app)
