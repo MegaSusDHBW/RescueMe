@@ -10,7 +10,7 @@ from Models import User
 from Models.InitDatabase import *
 
 
-app = Flask(__name__, template_folder="../")
+app = Flask(__name__, template_folder="../templates")
 app.config['SECRET_KEY'] = os.getenv('secret_key')
 app.config['SQLALCHEMY_DATABASE_URI'] = dbpath
 create_database(app=app)
