@@ -4,15 +4,27 @@ import pickle
 
 from flask import request, send_file
 
-from Flask.BackendHelper.Cryptography.CryptoHelper import decryptData, generateFernet, encryptKeyForDb, decryptKeyForDb
+from Flask.BackendHelper.Cryptography.CryptoHelper import decryptData, generateFernet, decryptKeyForDb, \
+    encryptData
 from Flask.BackendHelper.QR.QRCodeHelper import generateDictForQRCode, createQRCode
-from Models import User, FernetKeys
+from Models import User, FernetKeys, GlobalFernet
 from Models.InitDatabase import db
 
 
+
+
+
 class QRCodeController:
+
     @staticmethod
     def generateQRCode():
+        fernetQuery = db.session.query(GlobalFernet.GlobalFernet).first()
+        fernetQuery = fernetQuery
+
+        globalFernet = fernetQuery.fernet
+        globalFernet = pickle.loads(globalFernet)
+
+
         user_mail = request.args.get('email')
         date = request.args.get('date')
 
@@ -22,27 +34,36 @@ class QRCodeController:
                     FernetKeys.FernetKeys.email == user_mail).all()
                 fernetQuery = fernetQuery[0]
 
-                fernet = fernetQuery.fernet
-                decryptedFernet = decryptKeyForDb(privateKey=pickle.loads(os.getenv("PRIVATEKEY").encode("iso8859_16")),
-                                                  encryptedFernet=fernet)
+                fernetLocal = fernetQuery.fernet
+                decryptedFernet = decryptData(fernet=globalFernet,
+                                              encryptedData=fernetLocal)
 
                 result = db.session.query(User.User).filter(User.User.email == user_mail).all()
                 user_info = result[0]
-                createQRCode(generateDictForQRCode(user_info), decryptedFernet)
+                createQRCode(generateDictForQRCode(user_info), pickle.loads(decryptedFernet))
 
                 return send_file('../static/img/qrcode.png', mimetype='image/png'), 200
             else:
-                fernet = generateFernet()
-                fernet_encrypted = encryptKeyForDb(publicKey=pickle.loads(os.getenv("PRIVATEKEY").encode("iso8859_16")),
-                                                   fernet=pickle.dumps(fernet))
+                localFernet = generateFernet()
+
+                result = db.session.query(User.User).filter(User.User.email == user_mail).all()
+                user_info = result[0]
+                createQRCode(generateDictForQRCode(user_info), localFernet)
+
+                localFernet = pickle.dumps(localFernet)
+                fernet_encrypted = encryptData(fernet=globalFernet,
+                                               data=localFernet)
 
                 new_fernet = FernetKeys.FernetKeys(email=user_mail, fernet=fernet_encrypted)
                 db.session.add(new_fernet)
                 db.session.commit()
 
-                result = db.session.query(User.User).filter(User.User.email == user_mail).all()
-                user_info = result[0]
-                createQRCode(generateDictForQRCode(user_info), fernet)
+                ####
+                decryptedFernet = decryptData(fernet=globalFernet,
+                                              encryptedData=fernet_encrypted)
+
+                decryptedFernet = pickle.loads(decryptedFernet)
+                ####
 
                 print(generateDictForQRCode(user_info))
                 return send_file('../static/img/qrcode.png', mimetype='image/png'), 200

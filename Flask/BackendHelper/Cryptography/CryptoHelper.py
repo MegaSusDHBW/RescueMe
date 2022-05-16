@@ -1,5 +1,6 @@
 import hashlib
 import os
+import pickle
 
 import rsa
 from Crypto.Cipher import PKCS1_OAEP
@@ -41,8 +42,7 @@ def encryptData(data, fernet):
     return fernet.encrypt(data)
 
 
-def decryptData(encryptedData, key):
-    fernet = Fernet(key)
+def decryptData(encryptedData, fernet):
     return fernet.decrypt(encryptedData)
 
 

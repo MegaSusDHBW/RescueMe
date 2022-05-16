@@ -1,11 +1,13 @@
+import os
 import pickle
 
 import rsa
 from flask import Flask
 from flask_login import LoginManager
 
+from Flask.BackendHelper.Cryptography.CryptoHelper import generateFernet
 from Models.InitDatabase import *
-from Models import User
+from Models import User, FernetKeys, GlobalFernet
 from Flask.BackendHelper.Controller.DataController import DataController
 from Flask.BackendHelper.Controller.QRCodeController import QRCodeController
 from Flask.BackendHelper.Controller.UserController import UserController
@@ -64,9 +66,4 @@ app.add_url_rule("/delete-user", view_func=UserController.delete_user, methods=[
 app.add_url_rule("/logout", view_func=UserController.logout, methods=['GET', 'POST'])
 
 if __name__ == "__main__":
-    publicKey, privateKey = rsa.newkeys(512)
-
-    os.environ["PRIVATEKEY"] = pickle.dumps(privateKey).decode("iso8859_16")
-    os.environ["PUBLICKEY"] = pickle.dumps(publicKey).decode("iso8859_16")
-
     app.run()
