@@ -1,4 +1,6 @@
-from Crypto.PublicKey import RSA
+import pickle
+
+import rsa
 from flask import Flask
 from flask_login import LoginManager
 
@@ -62,11 +64,9 @@ app.add_url_rule("/delete-user", view_func=UserController.delete_user, methods=[
 app.add_url_rule("/logout", view_func=UserController.logout, methods=['GET', 'POST'])
 
 if __name__ == "__main__":
-    key = RSA.generate(4096)
-    privateKey = key.exportKey('PEM')
-    publicKey = key.publickey().exportKey('PEM')
+    publicKey, privateKey = rsa.newkeys(512)
 
-    os.environ["PRIVATEKEY"] = privateKey.decode("utf-8")
-    os.environ["PUBLICKEY"] = publicKey.decode("utf-8")
+    os.environ["PRIVATEKEY"] = pickle.dumps(privateKey).decode("utf-8")
+    os.environ["PUBLICKEY"] = pickle.dumps(publicKey).decode("utf-8")
 
     app.run()

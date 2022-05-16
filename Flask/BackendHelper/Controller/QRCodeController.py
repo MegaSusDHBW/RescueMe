@@ -18,11 +18,13 @@ class QRCodeController:
 
         try:
             if db.session.query(FernetKeys.FernetKeys.email).filter_by(email=user_mail).first() is not None:
-                fernetQuery = db.session.query(FernetKeys.FernetKeys).filter(FernetKeys.FernetKeys.email == user_mail).all()
+                fernetQuery = db.session.query(FernetKeys.FernetKeys).filter(
+                    FernetKeys.FernetKeys.email == user_mail).all()
                 fernetQuery = fernetQuery[0]
 
                 fernet = fernetQuery.fernet
-                decryptedFernet = decryptKeyForDb(privateKey=os.getenv("PRIVATEKEY").encode("utf-8"), encryptedFernet=fernet)
+                decryptedFernet = decryptKeyForDb(privateKey=pickle.loads(os.getenv("PRIVATEKEY").encode("utf-8")),
+                                                  encryptedFernet=fernet)
 
                 result = db.session.query(User.User).filter(User.User.email == user_mail).all()
                 user_info = result[0]
@@ -31,7 +33,8 @@ class QRCodeController:
                 return send_file('../static/img/qrcode.png', mimetype='image/png'), 200
             else:
                 fernet = generateFernet()
-                fernet_encrypted = encryptKeyForDb(publicKey=os.getenv("PUBLICKEY").encode("utf-8"), fernet=pickle.dumps(fernet))
+                fernet_encrypted = encryptKeyForDb(publicKey=os.getenv("PUBLICKEY").encode("utf-8"),
+                                                   fernet=pickle.dumps(fernet))
 
                 new_fernet = FernetKeys.FernetKeys(email=user_mail, fernet=fernet_encrypted)
                 db.session.add(new_fernet)

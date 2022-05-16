@@ -1,6 +1,7 @@
 import hashlib
 import os
 
+import rsa
 from Crypto.Cipher import PKCS1_OAEP
 from Crypto.PublicKey import RSA
 from cryptography.fernet import Fernet
@@ -26,17 +27,14 @@ def generateFernet():
 
 
 def encryptKeyForDb(publicKey, fernet):
-    RSApublicKey = RSA.importKey(publicKey)
-    OAEP_cipher = PKCS1_OAEP.new(RSApublicKey)
-    encryptedFernet = OAEP_cipher.encrypt(fernet)
-    return encryptedFernet
+    encMessage = rsa.encrypt(fernet.encode(),
+                             publicKey)
+    return encMessage
 
 
 def decryptKeyForDb(privateKey, encryptedFernet):
-    RSAprivateKey = RSA.importKey(privateKey)
-    OAEP_cipher = PKCS1_OAEP.new(RSAprivateKey)
-    decryptedMsg = OAEP_cipher.decrypt(encryptedFernet)
-    return decryptedMsg
+    decMessage = rsa.decrypt(encryptedFernet, privateKey).decode()
+    return decMessage
 
 
 def encryptData(data, fernet):
