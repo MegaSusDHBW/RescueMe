@@ -30,7 +30,7 @@ def welcome_mail(to, Name):
 
 
 # Password Reset Mail to a specific user containing a new password
-def pw_reset_mail(to, pw):
+def pw_reset_mail(to, url):
     subject = "RescueMe Passwort zurücksetzen! :O"
     body = """\
     <html>
@@ -38,9 +38,9 @@ def pw_reset_mail(to, pw):
       <body>
         <p>Hallo,<br>
            Vielen Dank für ihre Anfrage.<br>
-           Hier ist Ihr neues Passwort: {}<br>
+           Um zurückzusetzen, hier klicken: {}<br>
         </p>
       </body>
     </html>
-    """.format(pw)
+    """.format(url)
     send_mail(to, subject, body)

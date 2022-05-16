@@ -110,7 +110,25 @@ class UserController:
         email = request.json["email"]
         password = request.json["password"]
 
-        pw_reset_mail(email, password)
+        #TODO
+        pw_reset_mail(email, "http:localhost:5000/change-password?email="+email+"&"+password)
 
+    @staticmethod
+    def forgetPassword():
+        #email confirmed
+        email = request.args.get("email")
+        password = request.args.get("password")
+
+        user = User.User.query.filter_by(email=email).first()
+        if user:
+            db.session.query(User.User).filter(
+                User.User.email == email).update(
+                {
+                    User.User.password: password,
+                },
+                synchronize_session=False)
+            db.session.commit()
+        else:
+            print("Fehler beim Passwortändern")
 
 
