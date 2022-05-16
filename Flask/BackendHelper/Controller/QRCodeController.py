@@ -79,13 +79,8 @@ class QRCodeController:
         result = db.session.query(FernetKeys.FernetKeys).filter(FernetKeys.FernetKeys.email == user_email).all()
         user_info = result[0]
 
-        fernet = user_info.fernet
-        fernet_rsa_decrypted = decryptKeyForDb(os.getenv('PRIVATEKEY').encode("utf-8"), fernet)
-        fernet_decrypted = pickle.loads(fernet_rsa_decrypted)
-        print(fernet_decrypted)
+        fernet = pickle.loads(user_info.fernet)
 
-        decryptedJSON = decryptData(user_data, fernet_decrypted)
-        data = json.loads(decryptedJSON)
-        print(data)
+        decryptedData = decryptData(fernet=fernet, encryptedData=user_data)
 
-        return 'Decryption success'
+        return decryptedData

@@ -6,10 +6,12 @@ from Models.InitDatabase import db
 
 
 class DataController:
+    # proof if already existing
 
     '''
     Setter
     '''
+
     @staticmethod
     def setEmergencyContact():
         contact_json = request.get_json()
@@ -23,17 +25,31 @@ class DataController:
 
             user = User.User.query.filter_by(email=user_mail).first()
             if user:
-                new_emergencycontact = EmergencyContact.EmergencyContact(firstname=firstname, lastname=lastname,
-                                                                         birthdate=birthdate,
-                                                                         phonenumber=phonenumber, email=email,
-                                                                         user_id=user.id)
-                db.session.add(new_emergencycontact)
-                db.session.commit()
+                if user.emergencyContact is None:
+                    new_emergencycontact = EmergencyContact.EmergencyContact(firstname=firstname, lastname=lastname,
+                                                                             birthdate=birthdate,
+                                                                             phonenumber=phonenumber, email=email,
+                                                                             user_id=user.id)
+                    db.session.add(new_emergencycontact)
+                    db.session.commit()
+                else:
+                    user_id = User.User.query.filter_by(email=user_mail).first()
+                    user_id = user_id.emergencyContact.id
+                    db.session.query(EmergencyContact.EmergencyContact).filter(
+                        EmergencyContact.EmergencyContact.id == user_id).update(
+                        {EmergencyContact.EmergencyContact.email == email,
+                         EmergencyContact.EmergencyContact.firstname == firstname,
+                         EmergencyContact.EmergencyContact.lastname == lastname,
+                         EmergencyContact.EmergencyContact.phonenumber == phonenumber,
+                         EmergencyContact.EmergencyContact.birthdate == birthdate},
+                        synchronize_session=False)
+                    db.session.commit()
             else:
                 return jsonify(response="User nicht vorhanden"), 404
 
             return jsonify(response="Notfallkontakt angelegt"), 200
-        except:
+        except Exception as e:
+            print(e)
             return jsonify(response="Fehler beim Anlegen des Notfallkontakts"), 404
 
     @staticmethod
@@ -60,8 +76,8 @@ class DataController:
         except:
             return jsonify(response="Fehler beim Anlegen der Gesundheitsdaten"), 404
 
-
     '''Getter'''
+
     @staticmethod
     def getGeodata():
         try:
