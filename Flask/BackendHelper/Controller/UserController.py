@@ -117,7 +117,10 @@ class UserController:
             pepper = bytes(pepper, 'utf-8')
             password = hashPassword(salt + pepper, password)
             #TODO
-            pw_reset_mail(email, "http:localhost:5000/change-password?email="+str(email)+"&password="+str(password))
+            pw_reset_mail(email, "http://localhost:5000/change-password?email="+str(email)+"&password="+str(password))
+
+        return 200
+
 
     @staticmethod
     def forgetPassword():
@@ -135,7 +138,7 @@ class UserController:
                 synchronize_session=False)
             db.session.commit()
 
-            return render_template("resetPassword.html")
+            return render_template('resetPassword.html')
         else:
             print("Fehler beim Passwortändern")
 
