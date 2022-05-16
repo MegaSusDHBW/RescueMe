@@ -1,18 +1,13 @@
-import os
-import pickle
-
-import rsa
 from flask import Flask
 from flask_login import LoginManager
 
-from Flask.BackendHelper.Cryptography.CryptoHelper import generateFernet
-from Models.InitDatabase import *
-from Models import User, FernetKeys, GlobalFernet
 from Flask.BackendHelper.Controller.DataController import DataController
 from Flask.BackendHelper.Controller.QRCodeController import QRCodeController
 from Flask.BackendHelper.Controller.UserController import UserController
 from Flask.BackendHelper.Controller.ViewController import ViewController
 from Flask.BackendHelper.DB.DBHelper import *
+from Models import User
+from Models.InitDatabase import *
 
 # Für lokales Windows template_folder=templates
 app = Flask(__name__, template_folder='../templates')

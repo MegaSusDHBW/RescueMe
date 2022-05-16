@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 # Yagmail -> Magic Wrapper around smtplib's SMTP connection and allows messages to be sent
-helpdesk = yagmail.SMTP(os.getenv('gmMail'), os.getenv('gmPassword'), host='smtp.strato.de', port=465, timeout=120)
+helpdesk = yagmail.SMTP(os.getenv('mail'), os.getenv('password'), host='smtp.strato.de', port=465, timeout=120)
 
 
 def send_mail(to, subject, body):
