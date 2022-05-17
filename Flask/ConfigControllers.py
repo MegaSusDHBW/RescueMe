@@ -42,6 +42,8 @@ app.add_url_rule("/set-emergencycontact", view_func=DataController.setEmergencyC
 app.add_url_rule("/set-healthdata", view_func=DataController.setHealthData, methods=['POST'])
 # /getGeodata
 app.add_url_rule("/get-geodata", view_func=DataController.getGeodata, methods=['POST'])
+# /getHospitals
+app.add_url_rule("/get-hospitals", view_func=DataController.getHospitals, methods=['POST'])
 # getHealthData
 app.add_url_rule("/get-healthdata", view_func=DataController.getHealthData, methods=['GET'])
 # getEmergencyContact

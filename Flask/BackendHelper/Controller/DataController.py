@@ -1,6 +1,7 @@
 import what3words
 from flask import request, jsonify
 
+from ..Location.hospital import get_hospital_query_result
 from Models import EmergencyContact, User, HealthData
 from Models.InitDatabase import db
 
@@ -113,6 +114,19 @@ class DataController:
             return jsonify(words=res["words"]), 200
         except:
             return jsonify(words="Fehler beim Umwandeln der Koordinaten in What3Words"), 404
+
+    @staticmethod
+    def getHospitals():
+        try:
+            json_data = request.get_json()
+            Y = json_data["coords"]["longitude"]
+            X = json_data["coords"]["latitude"]
+
+            hospital_json = get_hospital_query_result(X, Y)
+
+            return hospital_json, 200
+        except:
+            return jsonify(words="Fehler beim Umwandeln der Koordinaten in Google API")
 
     @staticmethod
     def getHealthData():
