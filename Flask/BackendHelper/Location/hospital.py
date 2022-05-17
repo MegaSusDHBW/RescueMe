@@ -16,8 +16,10 @@ def get_hospital_query_result(lat, lng):
     try:
         query_result_hospital = google_places.nearby_search(
             lat_lng={'lat': lat, 'lng': lng},
-            radius=5000,
-            types=[types.TYPE_HOSPITAL])
+            types=[types.TYPE_HOSPITAL],
+            rankby='distance',
+            keyword='hospital for humans',
+        )
     except Exception as e:
         print('Could not get hospital query result: ', e)
         return None
