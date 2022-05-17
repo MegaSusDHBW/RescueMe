@@ -1,9 +1,10 @@
 from googleplaces import GooglePlaces, types, lang
 import requests
 import json
+import os
 
-# Google Places API Todo: Move to .env file
-API_KEY = 'Empty'
+# Google Places API
+API_KEY = os.getenv('GOOGLE_PLACES_API_KEY')
 
 # Initialising the GooglePlaces constructor
 google_places = GooglePlaces(API_KEY)
