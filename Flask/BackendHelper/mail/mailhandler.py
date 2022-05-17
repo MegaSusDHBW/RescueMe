@@ -9,7 +9,11 @@ helpdesk = yagmail.SMTP(os.getenv('mail'), os.getenv('password'), host='smtp.str
 
 def send_mail(to, subject, body):
     # Send Mail to the given recipient
-    helpdesk.send(to, subject, body)
+    try:
+        helpdesk.send(to, subject, body)
+    except Exception as e:
+        print('Sending Mail has thrown a Error: {}'.format(e))
+        return False
 
 
 # Welcome Mail to a new user containing his/her username
