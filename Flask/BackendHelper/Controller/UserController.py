@@ -57,15 +57,15 @@ class UserController:
                 key = user.password
                 new_key = hashPassword(salt + pepper, password)
             else:
-                return redirect(url_for('sign_up'))
+                return redirect(url_for('sign_up')), 404
 
             if user and key == new_key:
                 login_user(user)
                 print('Logged In')
-                return redirect(url_for('home'))
+                return redirect(url_for('home')), 200
             else:
                 print('Error')
-        return render_template('login.html')
+        return render_template('login.html'), 200
 
     @staticmethod
     @cross_origin()
@@ -77,9 +77,9 @@ class UserController:
             logout_user()
             db.session.delete(user)
             db.session.commit()
-            return redirect(url_for('login'))
+            return redirect(url_for('login')), 200
         else:
-            return redirect(url_for('sign_up'))
+            return redirect(url_for('sign_up')), 200
 
     @staticmethod
     @login_required
@@ -103,7 +103,7 @@ class UserController:
                 synchronize_session=False)
             db.session.commit()
         else:
-            print("Fehler beim Passwortändern")
+            print("Fehler beim Passwortändern"), 404
 
     @staticmethod
     def forgetPasswordSendMail():
@@ -121,7 +121,7 @@ class UserController:
                           "http://localhost:5000/change-password?email=" + str(email) + "&password=" + password.decode(
                               "iso8859_16"))
 
-        return "tut"
+        return jsonify(response="Email gesendet"), 200
 
     @staticmethod
     def forgetPassword():
@@ -139,9 +139,9 @@ class UserController:
                 synchronize_session=False)
             db.session.commit()
 
-            return render_template("forgetPasswort.html")
+            return render_template("forgetPasswort.html"), 200
         else:
-            print("Fehler beim Passwortändern")
+            return jsonify(response="Fehler"), 404
 
     @staticmethod
     def callEmergencyContact():
@@ -157,4 +157,4 @@ class UserController:
             return jsonify(response="Angehörige wurden informiert"), 200
         else:
             print("User nicht gefunden")
-            return jsonify(response="Angehöriger konnte NICHT informiert werden")
+            return jsonify(response="Angehöriger konnte NICHT informiert werden"), 404
