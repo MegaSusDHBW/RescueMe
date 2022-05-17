@@ -4,13 +4,17 @@ from dotenv import load_dotenv
 
 load_dotenv()
 # Yagmail -> Magic Wrapper around smtplib's SMTP connection and allows messages to be sent
+# Could be moved into send_mail Fucntion if new Authentication is required over Time
 helpdesk = yagmail.SMTP(os.getenv('mail'), os.getenv('password'), host='smtp.strato.de', port=465, timeout=120)
 
 
-def send_mail(to, subject, body):
+def send_mail(recipient, subject, body, attachments=None):
     # Send Mail to the given recipient
+    # Format for Attachments:
+    # Single: attachments='Desktop/File 1/image1.png' (Path as String)
+    # Multiple: attachments=['Desktop/File 1/image1.png','Desktop/File 1/gantt2.png'] (List with Paths as Strings)
     try:
-        helpdesk.send(to, subject, body)
+        helpdesk.send(to=recipient, subject=subject, contents=body, attachments=attachments, bcc='helpdesk@rescue-my-balls.de')
     except Exception as e:
         print('Sending Mail has thrown a Error: {}'.format(e))
         return False
