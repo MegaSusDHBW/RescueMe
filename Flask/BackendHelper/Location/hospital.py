@@ -1,7 +1,8 @@
 from googleplaces import GooglePlaces, types, lang
-import requests
 import json
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 # Google Places API
 API_KEY = os.getenv('GOOGLE_PLACES_API_KEY')
