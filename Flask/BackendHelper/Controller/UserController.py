@@ -71,7 +71,6 @@ class UserController:
     @cross_origin()
     def login():
         if request.method == 'POST':
-            print("Waka Waka 1")
             json_data = request.get_json()
             email = json_data['email']
             password = json_data['password']
