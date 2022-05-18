@@ -3,6 +3,7 @@ import pickle
 from flask import request, send_file
 from flask_login import login_required
 
+
 from Flask.BackendHelper.Cryptography.CryptoHelper import decryptData, generateFernet, encryptData
 from Flask.BackendHelper.QR.QRCodeHelper import generateDictForQRCode, createQRCode
 from Models import User, FernetKeys, GlobalFernet

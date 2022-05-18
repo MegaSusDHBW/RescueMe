@@ -1,8 +1,8 @@
 import os
 
-from flask import request, redirect, render_template, url_for, jsonify, session
+from flask import request, redirect, render_template, url_for, jsonify
 from flask_cors import cross_origin
-from flask_login import login_user, login_required, logout_user
+from flask_login import login_user, logout_user, login_required
 
 from Flask.BackendHelper.Cryptography.CryptoHelper import generateSalt, hashPassword
 from Flask.BackendHelper.mail.mailhandler import pw_reset_mail, welcome_mail, sendEmergencyMail
@@ -31,7 +31,7 @@ class UserController:
                 db.session.add(new_user)
                 db.session.commit()
 
-                welcome_mail(email, str(user.healthData.firstname)+str(user.healthData.lastname))
+                welcome_mail(email)
 
                 return redirect(url_for('login')), 200
             else:

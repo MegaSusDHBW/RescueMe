@@ -21,20 +21,20 @@ def send_mail(recipient, subject, body, attachments=None):
 
 
 # Welcome Mail to a new user containing his/her username
-def welcome_mail(to, Name):
+def welcome_mail(to):
     # Send Welcome Mail to the given recipient
     subject = "Herzlich Willkommen bei RescueMe! :)"
     body = """\
     <html>
       <head></head>
       <body>
-        <p>Herzlich Willkommen {}<br>
+        <p>Herzlich Willkommen<br>
            Es freut uns Sie bei RescueMe begrüßen zu dürfen!<br>
            Hier ist ihr  <a href="https://puginarug.com/">Registrierungslink</a>!
         </p>
       </body>
     </html>
-    """.format(Name)
+    """
     send_mail(to, subject, body)
 
 

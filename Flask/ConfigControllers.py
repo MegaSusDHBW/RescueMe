@@ -1,16 +1,13 @@
-import pickle
-
-from flask import Flask
 from flask_login import LoginManager
 
+from Flask.BackendHelper.Controller.UserController import UserController
 from Flask.BackendHelper.Controller.DataController import DataController
 from Flask.BackendHelper.Controller.QRCodeController import QRCodeController
-from Flask.BackendHelper.Controller.UserController import UserController
 from Flask.BackendHelper.Controller.ViewController import ViewController
-from Flask.BackendHelper.Cryptography.CryptoHelper import decryptData
 from Flask.BackendHelper.DB.DBHelper import *
-from Models import User, FernetKeys
+from Models import User
 from Models.InitDatabase import *
+from flask import Flask
 
 
 app = Flask(__name__, template_folder="../templates")
@@ -18,16 +15,13 @@ app.config['SECRET_KEY'] = os.getenv('secret_key')
 app.config['SQLALCHEMY_DATABASE_URI'] = dbpath
 create_database(app=app)
 
-# LoginManager
 login_manager = LoginManager()
 login_manager.login_view = 'login'
-login_manager.init_app(app)
-
+login_manager.init_app(app=app)
 
 @login_manager.user_loader
 def load_user(id):
     return User.User.query.get(int(id))
-
 
 '''ViewController'''
 # @app.route("/")
@@ -70,7 +64,6 @@ app.add_url_rule("/change-password", view_func=UserController.changePassword, me
 app.add_url_rule("/forget-password", view_func=UserController.forgetPasswordSendMail, methods=['POST'])
 # confirm email
 app.add_url_rule("/change-password", view_func=UserController.forgetPassword, methods=['GET'])
-
 
 if __name__ == "__main__":
     app.run()
