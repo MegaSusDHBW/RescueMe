@@ -1,5 +1,6 @@
 import os
 
+import jwt
 from flask import request, redirect, render_template, url_for, jsonify
 from flask_cors import cross_origin
 from flask_login import login_user, logout_user, login_required
@@ -44,11 +45,18 @@ class UserController:
     @cross_origin()
     def login():
         if request.method == 'POST':
+            print("Waka Waka 1")
             json_data = request.get_json()
             email = json_data['email']
             password = json_data['password']
             # email = request.form.get('email')
             # password = request.form.get('password')
+
+            # Check empty string fields
+            if email == '' or password == '':
+                return jsonify({'message': 'Check Credentials'}), 400
+            elif not email or not password:
+                return jsonify({'message': 'Check Credentials'}), 400
 
             user = User.User.query.filter_by(email=email).first()
 
@@ -59,15 +67,16 @@ class UserController:
                 key = user.password
                 new_key = hashPassword(salt + pepper, password)
             else:
-                return redirect(url_for('sign_up')), 404
+                return jsonify({'message': 'Check Credentials'}), 400
 
             if user and key == new_key:
-                login_user(user)
-                print('Logged In')
-                return redirect(url_for('home')), 200
+                # login_user(user)
+                token = jwt.encode({'email': email}, os.getenv('secret_key'), algorithm='HS256')
+                print(token)
+                return jsonify({'jwt': token}), 200
             else:
-                print('Error')
-        return render_template('login.html'), 200
+                return jsonify({'message': 'Check Credentials'}), 400
+        return jsonify({'message': 'Bullshit'}), 400
 
     @staticmethod
     @cross_origin()

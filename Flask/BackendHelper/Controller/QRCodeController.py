@@ -4,9 +4,10 @@ from flask import request, send_file
 from flask_cors import cross_origin
 from flask_login import login_required
 
-
+from Flask.BackendHelper.Controller.token_required import token_required
 from Flask.BackendHelper.Cryptography.CryptoHelper import decryptData, generateFernet, encryptData
 from Flask.BackendHelper.QR.QRCodeHelper import generateDictForQRCode, createQRCode
+
 from Models import User, FernetKeys, GlobalFernet
 from Models.InitDatabase import db
 
@@ -15,7 +16,8 @@ class QRCodeController:
 
     @staticmethod
     @cross_origin()
-    def generateQRCode():
+    @token_required
+    def generateQRCode(current_user):
         fernetQuery = db.session.query(GlobalFernet.GlobalFernet).first()
 
         globalFernet = fernetQuery.fernet
@@ -36,11 +38,9 @@ class QRCodeController:
 
                 result = db.session.query(User.User).filter(User.User.email == user_mail).all()
                 user_info = result[0]
-                if result.emergencyContact and result.healthData:
-                    createQRCode(generateDictForQRCode(user_info), pickle.loads(decryptedFernet))
-                    return send_file('../static/img/qrcode.png', mimetype='image/png'), 200
-                else:
-                    return send_file('../static/img/dino.png', mimetype='image/png'), 200
+                createQRCode(generateDictForQRCode(user_info), pickle.loads(decryptedFernet))
+
+                return send_file('../static/img/qrcode.png', mimetype='image/png'), 200
             else:
                 localFernet = generateFernet()
 
