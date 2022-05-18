@@ -1,8 +1,9 @@
 import os
 
+import jwt
 from flask import request, redirect, render_template, url_for, jsonify
 from flask_cors import cross_origin
-from flask_login import login_user, logout_user, login_required
+from flask_login import logout_user
 
 from Flask.BackendHelper.Cryptography.CryptoHelper import generateSalt, hashPassword
 from Flask.BackendHelper.mail.mailhandler import pw_reset_mail, welcome_mail, sendEmergencyMail
@@ -21,6 +22,32 @@ class UserController:
             #lastname = json_data['lastName']
             password = json_data['password']
             passwordConfirm = json_data['passwordConfirm']
+
+            # Check if EMAIL is a valid email Todo: Only Pfusch
+            if email.find('@') == -1:
+                return jsonify({'message': 'Invalid email'}), 400
+            # Check if PASSWORD and PASSWORD_CONFIRM are the same
+            if password != passwordConfirm:
+                return jsonify({'message': 'Passwords do not match'}), 400
+            # Check if EMAIL is already in use
+            if User.User.query.filter_by(email=email).first() is not None:
+                return jsonify({'message': 'Email already in use'}), 400
+
+            # Check if PASSWORD is at least 8 characters long
+            if len(password) < 8:
+                return jsonify({'message': 'Password must be at least 8 characters long'}), 400
+            # Check if PASSWORD contains at least one number
+            if password.isdigit():
+                return jsonify({'message': 'Password must contain at least one number'}), 400
+            # Check if PASSWORD contains at least one uppercase letter
+            if password.isupper():
+                return jsonify({'message': 'Password must contain at least one uppercase letter'}), 400
+            # Check if PASSWORD contains at least one lowercase letter
+            if password.islower():
+                return jsonify({'message': 'Password must contain at least one lowercase letter'}), 400
+            # Check if PASSWORD contains at least one special character
+            if password.isalnum():
+                return jsonify({'message': 'Password must contain at least one special character'}), 400
 
             user = User.User.query.filter_by(email=email).first()
 
@@ -50,6 +77,12 @@ class UserController:
             email = json_data['email']
             password = json_data['password']
 
+            # Check empty string fields
+            if email == '' or password == '':
+                return jsonify({'message': 'Check Credentials'}), 400
+            elif not email or not password:
+                return jsonify({'message': 'Check Credentials'}), 400
+
             user = User.User.query.filter_by(email=email).first()
 
             if user:
@@ -59,15 +92,16 @@ class UserController:
                 key = user.password
                 new_key = hashPassword(salt + pepper, password)
             else:
-                return redirect(url_for('sign_up')), 404
+                return jsonify({'message': 'Check Credentials'}), 400
 
             if user and key == new_key:
-                login_user(user)
-                print('Logged In')
-                return redirect(url_for('home')), 200
+                # login_user(user)
+                token = jwt.encode({'email': email}, os.getenv('secret_key'), algorithm='HS256')
+                print(token)
+                return jsonify({'jwt': token}), 200
             else:
-                print('Error')
-        return render_template('login.html'), 200
+                return jsonify({'message': 'Check Credentials'}), 400
+        return jsonify({'message': 'Bullshit'}), 400
 
     @staticmethod
     @cross_origin()

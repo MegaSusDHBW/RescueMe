@@ -1,3 +1,6 @@
+from functools import wraps
+
+import jwt
 from flask_login import LoginManager
 
 from Flask.BackendHelper.Controller.UserController import UserController
@@ -7,21 +10,12 @@ from Flask.BackendHelper.Controller.ViewController import ViewController
 from Flask.BackendHelper.DB.DBHelper import *
 from Models import User
 from Models.InitDatabase import *
-from flask import Flask
-
+from flask import Flask, request, jsonify
 
 app = Flask(__name__, template_folder="../templates")
 app.config['SECRET_KEY'] = os.getenv('secret_key')
 app.config['SQLALCHEMY_DATABASE_URI'] = dbpath
 create_database(app=app)
-
-login_manager = LoginManager()
-# login_manager.login_view = 'login'
-login_manager.init_app(app=app)
-
-@login_manager.user_loader
-def load_user(id):
-    return User.User.query.get(int(id))
 
 '''ViewController'''
 # @app.route("/")
