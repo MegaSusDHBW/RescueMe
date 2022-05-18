@@ -20,7 +20,6 @@ def token_required(f):
 
         try:
             data = jwt.decode(token, os.getenv('secret_key'), algorithms=['HS256'])
-            print(data)
             current_user = User.User.query.filter_by(email=data['email']).first()
         except Exception as e:
             return jsonify({'message': 'token is invalid', 'error': str(e)}), 401

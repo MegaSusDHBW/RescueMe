@@ -3,7 +3,7 @@ import os
 import jwt
 from flask import request, redirect, render_template, url_for, jsonify
 from flask_cors import cross_origin
-from flask_login import login_user, logout_user, login_required
+from flask_login import logout_user
 
 from Flask.BackendHelper.Cryptography.CryptoHelper import generateSalt, hashPassword
 from Flask.BackendHelper.mail.mailhandler import pw_reset_mail, welcome_mail, sendEmergencyMail
