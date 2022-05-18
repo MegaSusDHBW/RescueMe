@@ -71,7 +71,6 @@ class UserController:
 
     @staticmethod
     @cross_origin()
-    @login_required
     def delete_user():
         email = request.args['email']
         user = User.User.query.filter_by(email=email).first()
@@ -85,13 +84,11 @@ class UserController:
 
     @staticmethod
     @cross_origin()
-    @login_required
     def logout():
         logout_user()
         return redirect(url_for('login'))
 
     @staticmethod
-    @login_required
     def changePassword():
         email = request.json["email"]
         password = request.json["password"]
@@ -110,7 +107,6 @@ class UserController:
             print("Fehler beim Passwortändern"), 404
 
     @staticmethod
-    @login_required
     def forgetPasswordSendMail():
         email = request.json["email"]
         password = request.json["password"]
@@ -129,7 +125,6 @@ class UserController:
         return jsonify(response="Email gesendet"), 200
 
     @staticmethod
-    @login_required
     def forgetPassword():
         # email confirmed
         email = request.args.get("email")
@@ -150,7 +145,6 @@ class UserController:
             return jsonify(response="Fehler"), 404
 
     @staticmethod
-    @login_required
     def callEmergencyContact():
         email = request.json["email"]
         accidentplace = request.json["accidentplace"]

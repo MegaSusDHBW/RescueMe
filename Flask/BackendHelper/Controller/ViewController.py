@@ -8,7 +8,6 @@ class ViewController:
         return render_template('index.html')
 
     @staticmethod
-    @login_required
     def home():
         if request.method == 'POST':
             return redirect(url_for('logout'))
