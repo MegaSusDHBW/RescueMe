@@ -82,6 +82,7 @@ class UserController:
             return redirect(url_for('sign_up')), 200
 
     @staticmethod
+    @cross_origin()
     @login_required
     def logout():
         logout_user()

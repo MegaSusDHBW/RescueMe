@@ -1,6 +1,7 @@
 import pickle
 
 from flask import request, send_file
+from flask_cors import cross_origin
 from flask_login import login_required
 
 
@@ -13,6 +14,7 @@ from Models.InitDatabase import db
 class QRCodeController:
 
     @staticmethod
+    @cross_origin()
     @login_required
     def generateQRCode():
         fernetQuery = db.session.query(GlobalFernet.GlobalFernet).first()
