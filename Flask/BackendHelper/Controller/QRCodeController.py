@@ -18,7 +18,6 @@ class QRCodeController:
     @login_required
     def generateQRCode():
         fernetQuery = db.session.query(GlobalFernet.GlobalFernet).first()
-        fernetQuery = fernetQuery
 
         globalFernet = fernetQuery.fernet
         globalFernet = pickle.loads(globalFernet)
