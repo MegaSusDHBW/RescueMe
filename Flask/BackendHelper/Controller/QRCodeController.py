@@ -36,9 +36,11 @@ class QRCodeController:
 
                 result = db.session.query(User.User).filter(User.User.email == user_mail).all()
                 user_info = result[0]
-                createQRCode(generateDictForQRCode(user_info), pickle.loads(decryptedFernet))
-
-                return send_file('../static/img/qrcode.png', mimetype='image/png'), 200
+                if result.emergencyContact and result.healthData:
+                    createQRCode(generateDictForQRCode(user_info), pickle.loads(decryptedFernet))
+                    return send_file('../static/img/qrcode.png', mimetype='image/png'), 200
+                else:
+                    return send_file('../static/img/dino.png', mimetype='image/png'), 200
             else:
                 localFernet = generateFernet()
 
