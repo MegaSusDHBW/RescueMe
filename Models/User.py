@@ -1,6 +1,5 @@
 from Models.InitDatabase import db
 from flask_login import UserMixin
-from Models import EmergencyContact, HealthData
 
 
 class User(db.Model, UserMixin):
