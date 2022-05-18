@@ -17,8 +17,8 @@ class UserController:
         if request.method == 'POST':
             json_data = request.get_json()
             email = json_data['email']
-            firstname = json_data['firstname']
-            lastname = json_data['lastname']
+            firstname = json_data['firstName']
+            lastname = json_data['lastName']
             password = json_data['password']
             passwordConfirm = json_data['passwordConfirm']
 
@@ -33,7 +33,7 @@ class UserController:
                 db.session.add(new_user)
                 db.session.commit()
 
-                welcome_mail(email, str(firstname)+str(lastname))
+                welcome_mail(email, str(firstname) + " " + str(lastname))
 
                 return redirect(url_for('login')), 200
             else:
