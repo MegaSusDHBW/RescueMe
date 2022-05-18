@@ -33,10 +33,10 @@ class UserController:
 
                 welcome_mail(email, str(user.healthData.firstname)+str(user.healthData.lastname))
 
-                return redirect(url_for('login'))
+                return redirect(url_for('login')), 200
             else:
                 print('Error')
-        return render_template('signUp.html')
+                return render_template('signUp.html'), 404
 
     @staticmethod
     @cross_origin()
