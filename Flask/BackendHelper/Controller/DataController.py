@@ -68,7 +68,7 @@ class DataController:
 
             user = User.User.query.filter_by(email=user_mail).first()
             if user:
-                if user.emergencyContact is None:
+                if user.healthData is None:
                     new_healthdata = HealthData.HealthData(firstname=firstname, lastname=lastname,
                                                            organDonorState=organDonorState,
                                                            bloodGroup=bloodGroup, user_id=user.id)
@@ -133,20 +133,22 @@ class DataController:
     def getHealthData():
         user_email = request.args.get("email")
 
-        a = db.session.query(User.User).filter(User.User.email == user_email).all()
-        user_data = a[0]
+        user_data = db.session.query(User.User).filter(User.User.email == user_email).first()
 
         healthDataJSON = {}
-        if user_data.healthData:
-            healthDataJSON.update({"firstname": user_data.healthData.firstname})
-            healthDataJSON.update({"lastname": user_data.healthData.lastname})
-            healthDataJSON.update({"organDonorState": user_data.healthData.organDonorState})
-            healthDataJSON.update({"bloodgroup": user_data.healthData.bloodGroup})
+        if user_data is not None:
+            if not user_data.healthData:
+                healthDataJSON.update({"firstname": ""})
+                healthDataJSON.update({"lastname": ""})
+                healthDataJSON.update({"organDonorState": ""})
+                healthDataJSON.update({"bloodgroup": ""})
+            else:
+                healthDataJSON.update({"firstname": user_data.healthData.firstname})
+                healthDataJSON.update({"lastname": user_data.healthData.lastname})
+                healthDataJSON.update({"organDonorState": user_data.healthData.organDonorState})
+                healthDataJSON.update({"bloodgroup": user_data.healthData.bloodGroup})
         else:
-            healthDataJSON.update({"firstname": ""})
-            healthDataJSON.update({"lastname": ""})
-            healthDataJSON.update({"organDonorState": ""})
-            healthDataJSON.update({"bloodgroup": ""})
+            print("GET HEALTHDATA User nicht gefunden")
 
         return jsonify(healthDataJSON), 200
 
@@ -154,21 +156,22 @@ class DataController:
     def getEmergencyContact():
         user_email = request.args.get("email")
 
-        a = db.session.query(User.User).filter(User.User.email == user_email).all()
-        user_data = a[0]
+        user_data = db.session.query(User.User).filter(User.User.email == user_email).first()
 
         emergencyContactJSON = {}
-        if user_data.emergencyContact:
-            emergencyContactJSON.update({"emergencyEmail": user_data.emergencyContact.email})
-            emergencyContactJSON.update({"emergencyFirstname": user_data.emergencyContact.firstname})
-            emergencyContactJSON.update({"emergencyLastname": user_data.emergencyContact.lastname})
-            emergencyContactJSON.update({"emergencyBirthday": user_data.emergencyContact.birthdate})
-            emergencyContactJSON.update({"emergencyPhone": user_data.emergencyContact.phonenumber})
+        if user_data is not None:
+            if not user_data.emergencyContact:
+                emergencyContactJSON.update({"emergencyEmail": ""})
+                emergencyContactJSON.update({"emergencyFirstname": ""})
+                emergencyContactJSON.update({"emergencyLastname": ""})
+                emergencyContactJSON.update({"emergencyBirthday": ""})
+                emergencyContactJSON.update({"emergencyPhone": ""})
+            else:
+                emergencyContactJSON.update({"emergencyEmail": user_data.emergencyContact.email})
+                emergencyContactJSON.update({"emergencyFirstname": user_data.emergencyContact.firstname})
+                emergencyContactJSON.update({"emergencyLastname": user_data.emergencyContact.lastname})
+                emergencyContactJSON.update({"emergencyBirthday": user_data.emergencyContact.birthdate})
+                emergencyContactJSON.update({"emergencyPhone": user_data.emergencyContact.phonenumber})
         else:
-            emergencyContactJSON.update({"emergencyEmail": ""})
-            emergencyContactJSON.update({"emergencyFirstname": ""})
-            emergencyContactJSON.update({"emergencyLastname": ""})
-            emergencyContactJSON.update({"emergencyBirthday": ""})
-            emergencyContactJSON.update({"emergencyPhone": ""})
-
+            print("GET EMERGENCYCONTACT User nicht gefunden")
         return jsonify(emergencyContactJSON), 200

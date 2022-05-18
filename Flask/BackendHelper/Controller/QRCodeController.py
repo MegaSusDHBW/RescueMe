@@ -25,28 +25,20 @@ class QRCodeController:
         date = request.args.get('date')
 
         try:
-            if db.session.query(FernetKeys.FernetKeys.email).filter_by(email=user_mail).first() is not None:
-                fernetQuery = db.session.query(FernetKeys.FernetKeys).filter(
-                    FernetKeys.FernetKeys.email == user_mail).all()
-                fernetQuery = fernetQuery[0]
-
-                fernetLocal = fernetQuery.fernet
+            fernetKey = db.session.query(FernetKeys.FernetKeys).filter_by(email=user_mail).first()
+            if fernetKey is not None:
                 decryptedFernet = decryptData(fernet=globalFernet,
-                                              encryptedData=fernetLocal)
+                                              encryptedData=fernetKey.fernet)
 
-                result = db.session.query(User.User).filter(User.User.email == user_mail).all()
-                user_info = result[0]
-                if result.emergencyContact and result.healthData:
+                user_info = db.session.query(User.User).filter(User.User.email == user_mail).first()
+
+                if user_info.healthData and user_info.emergencyContact:
                     createQRCode(generateDictForQRCode(user_info), pickle.loads(decryptedFernet))
                     return send_file('../static/img/qrcode.png', mimetype='image/png'), 200
                 else:
                     return send_file('../static/img/dino.png', mimetype='image/png'), 200
             else:
                 localFernet = generateFernet()
-
-                result = db.session.query(User.User).filter(User.User.email == user_mail).all()
-                user_info = result[0]
-                createQRCode(generateDictForQRCode(user_info), localFernet)
 
                 localFernet = pickle.dumps(localFernet)
                 fernet_encrypted = encryptData(fernet=globalFernet,
@@ -56,15 +48,8 @@ class QRCodeController:
                 db.session.add(new_fernet)
                 db.session.commit()
 
-                ####
-                decryptedFernet = decryptData(fernet=globalFernet,
-                                              encryptedData=fernet_encrypted)
+                return send_file('../static/img/dino.png', mimetype='image/png'), 200
 
-                decryptedFernet = pickle.loads(decryptedFernet)
-                ####
-
-                print(generateDictForQRCode(user_info))
-                return send_file('../static/img/qrcode.png', mimetype='image/png'), 200
         except Exception as e:
             print(e)
             return send_file('../static/img/dino.png', mimetype='image/png'), 200
