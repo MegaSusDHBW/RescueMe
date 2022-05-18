@@ -1,6 +1,7 @@
 import pickle
 
 from flask import request, send_file
+from flask_login import login_required
 
 from Flask.BackendHelper.Cryptography.CryptoHelper import decryptData, generateFernet, encryptData
 from Flask.BackendHelper.QR.QRCodeHelper import generateDictForQRCode, createQRCode
@@ -11,6 +12,7 @@ from Models.InitDatabase import db
 class QRCodeController:
 
     @staticmethod
+    @login_required
     def generateQRCode():
         fernetQuery = db.session.query(GlobalFernet.GlobalFernet).first()
         fernetQuery = fernetQuery
@@ -65,6 +67,7 @@ class QRCodeController:
             return send_file('../static/img/dino.png', mimetype='image/png'), 200
 
     @staticmethod
+    @login_required
     def readQRCode():
         user_email = request.args.get('email')
         user_data = request.args.get('input')

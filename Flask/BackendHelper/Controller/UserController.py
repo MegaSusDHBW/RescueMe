@@ -1,6 +1,6 @@
 import os
 
-from flask import request, redirect, render_template, url_for, jsonify
+from flask import request, redirect, render_template, url_for, jsonify, session
 from flask_cors import cross_origin
 from flask_login import login_user, login_required, logout_user
 
@@ -31,7 +31,7 @@ class UserController:
                 db.session.add(new_user)
                 db.session.commit()
 
-                welcome_mail(email, "Hans Peter")
+                welcome_mail(email, str(user.healthData.firstname)+str(user.healthData.lastname))
 
                 return redirect(url_for('login'))
             else:
@@ -88,6 +88,7 @@ class UserController:
         return redirect(url_for('login'))
 
     @staticmethod
+    @login_required
     def changePassword():
         email = request.json["email"]
         password = request.json["password"]
@@ -106,6 +107,7 @@ class UserController:
             print("Fehler beim Passwortändern"), 404
 
     @staticmethod
+    @login_required
     def forgetPasswordSendMail():
         email = request.json["email"]
         password = request.json["password"]
@@ -124,6 +126,7 @@ class UserController:
         return jsonify(response="Email gesendet"), 200
 
     @staticmethod
+    @login_required
     def forgetPassword():
         # email confirmed
         email = request.args.get("email")
@@ -144,6 +147,7 @@ class UserController:
             return jsonify(response="Fehler"), 404
 
     @staticmethod
+    @login_required
     def callEmergencyContact():
         email = request.json["email"]
         accidentplace = request.json["accidentplace"]

@@ -1,5 +1,6 @@
 import what3words
 from flask import request, jsonify
+from flask_login import login_required
 
 from ..Location.hospital import get_hospital_query_result
 from Models import EmergencyContact, User, HealthData
@@ -14,6 +15,7 @@ class DataController:
     '''
 
     @staticmethod
+    @login_required
     def setEmergencyContact():
         contact_json = request.get_json()
         try:
@@ -56,6 +58,7 @@ class DataController:
             return jsonify(response="Fehler beim Anlegen des Notfallkontakts"), 404
 
     @staticmethod
+    @login_required
     def setHealthData():
         healthdata_json = request.get_json()
         try:
@@ -97,6 +100,7 @@ class DataController:
     '''Getter'''
 
     @staticmethod
+    @login_required
     def getGeodata():
         try:
             json_data = request.get_json()
@@ -116,6 +120,7 @@ class DataController:
             return jsonify(words="Fehler beim Umwandeln der Koordinaten in What3Words"), 404
 
     @staticmethod
+    @login_required
     def getHospitals():
         try:
             json_data = request.get_json()
@@ -129,6 +134,7 @@ class DataController:
             return jsonify(words="Fehler beim Umwandeln der Koordinaten in Google API")
 
     @staticmethod
+    @login_required
     def getHealthData():
         user_email = request.args.get("email")
 
@@ -144,6 +150,7 @@ class DataController:
         return jsonify(healthDataJSON), 200
 
     @staticmethod
+    @login_required
     def getEmergencyContact():
         user_email = request.args.get("email")
 
