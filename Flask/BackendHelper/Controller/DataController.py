@@ -142,10 +142,18 @@ class DataController:
         user_data = a[0]
 
         healthDataJSON = {}
-        healthDataJSON.update({"firstname": user_data.healthData.firstname})
-        healthDataJSON.update({"lastname": user_data.healthData.lastname})
-        healthDataJSON.update({"organDonorState": user_data.healthData.organDonorState})
-        healthDataJSON.update({"bloodgroup": user_data.healthData.bloodGroup})
+        if user_data.healthData:
+            healthDataJSON.update({"firstname": user_data.healthData.firstname})
+            healthDataJSON.update({"lastname": user_data.healthData.lastname})
+            healthDataJSON.update({"organDonorState": user_data.healthData.organDonorState})
+            healthDataJSON.update({"bloodgroup": user_data.healthData.bloodGroup})
+        else:
+            healthDataJSON.update({"firstname": ""})
+            healthDataJSON.update({"lastname": ""})
+            healthDataJSON.update({"organDonorState": ""})
+            healthDataJSON.update({"bloodgroup": ""})
+
+
 
         return jsonify(healthDataJSON), 200
 
@@ -158,10 +166,17 @@ class DataController:
         user_data = a[0]
 
         emergencyContactJSON = {}
-        emergencyContactJSON.update({"emergencyEmail": user_data.emergencyContact.email})
-        emergencyContactJSON.update({"emergencyFirstname": user_data.emergencyContact.firstname})
-        emergencyContactJSON.update({"emergencyLastname": user_data.emergencyContact.lastname})
-        emergencyContactJSON.update({"emergencyBirthday": user_data.emergencyContact.birthdate})
-        emergencyContactJSON.update({"emergencyPhone": user_data.emergencyContact.phonenumber})
+        if user_data.emergencyContact:
+            emergencyContactJSON.update({"emergencyEmail": user_data.emergencyContact.email})
+            emergencyContactJSON.update({"emergencyFirstname": user_data.emergencyContact.firstname})
+            emergencyContactJSON.update({"emergencyLastname": user_data.emergencyContact.lastname})
+            emergencyContactJSON.update({"emergencyBirthday": user_data.emergencyContact.birthdate})
+            emergencyContactJSON.update({"emergencyPhone": user_data.emergencyContact.phonenumber})
+        else:
+            emergencyContactJSON.update({"emergencyEmail": ""})
+            emergencyContactJSON.update({"emergencyFirstname": ""})
+            emergencyContactJSON.update({"emergencyLastname": ""})
+            emergencyContactJSON.update({"emergencyBirthday": ""})
+            emergencyContactJSON.update({"emergencyPhone": ""})
 
         return jsonify(emergencyContactJSON), 200
