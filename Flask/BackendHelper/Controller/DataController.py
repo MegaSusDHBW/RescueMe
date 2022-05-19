@@ -104,11 +104,11 @@ class DataController:
     @token_required
     def getGeodata(current_user):
         try:
-            y = 45
-            x = 45
-            #json_data = request.get_json()
-            #x = json_data["coords"]["longitude"]
-            #X = json_data["coords"]["latitude"]
+            #y = 45
+            #x = 45
+            json_data = request.get_json()
+            y = json_data["coords"]["longitude"]
+            x = json_data["coords"]["latitude"]
 
             print("X: " + str(x))
             print("Y:" + str(y))
@@ -126,11 +126,11 @@ class DataController:
     @token_required
     def getHospitals(current_user):
         try:
-            y = 45
-            x = 45
-            #json_data = request.get_json()
-            #y = json_data["coords"]["longitude"]
-            #x = json_data["coords"]["latitude"]
+            #y = 45
+            #x = 45
+            json_data = request.get_json()
+            y = json_data["coords"]["longitude"]
+            x = json_data["coords"]["latitude"]
 
             hospital_json = get_hospital_query_result(x, y)
 
