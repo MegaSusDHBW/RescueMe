@@ -3,7 +3,7 @@ from flask import request, jsonify
 from flask_login import login_required
 
 from ..Location.hospital import get_hospital_query_result
-from Models import EmergencyContact, User, HealthData
+from Models import EmergencyContact, User, HealthData, Allergies
 from Models.InitDatabase import db
 
 
@@ -65,15 +65,27 @@ class DataController:
             organDonorState = healthdata_json["organDonorState"]
             bloodGroup = healthdata_json["bloodGroup"]
             user_mail = healthdata_json["userMail"]
+            birthdata = healthdata_json["birthDate"]
+            diseases = healthdata_json["diseases"]
+            allegies = healthdata_json["allergies"]
+            vaccines = healthdata_json["vaccines"]
+
 
             user = User.User.query.filter_by(email=user_mail).first()
             if user:
                 if user.healthData is None:
                     new_healthdata = HealthData.HealthData(firstname=firstname, lastname=lastname,
                                                            organDonorState=organDonorState,
-                                                           bloodGroup=bloodGroup, user_id=user.id)
+                                                           bloodGroup=bloodGroup, user_id=user.id,)
                     db.session.add(new_healthdata)
                     db.session.commit()
+
+                    user = User.User.query.filter_by(email=user_mail).first()
+
+                    for i in range(len(allegies)):
+                        new_allergie = Allergies.Allergies(name=allegies[i]["title"], health_id=user.healthData.id)
+                        db.session.add(new_allergie)
+                        db.session.commit()
                 else:
                     user_id = User.User.query.filter_by(email=user_mail).first()
                     user_id = user_id.emergencyContact.id

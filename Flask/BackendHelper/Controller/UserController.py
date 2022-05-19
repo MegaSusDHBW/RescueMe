@@ -23,7 +23,9 @@ class UserController:
             password = json_data['password']
             passwordConfirm = json_data['passwordConfirm']
 
-            # Check if EMAIL is a valid email Todo: Only Pfusch
+            #isAdmin = ?
+
+           #TODO
             if email.find('@') == -1:
                 return jsonify({'message': 'Invalid email'}), 400
             # Check if PASSWORD and PASSWORD_CONFIRM are the same
