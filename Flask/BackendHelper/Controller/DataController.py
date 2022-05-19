@@ -126,8 +126,8 @@ class DataController:
     @token_required
     def getHospitals(current_user):
         try:
-            #y = 45
-            #x = 45
+            #y = 8.691005
+            #x = 48.445664
             json_data = request.get_json()
             y = json_data["coords"]["longitude"]
             x = json_data["coords"]["latitude"]

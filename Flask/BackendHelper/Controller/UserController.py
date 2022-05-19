@@ -1,5 +1,6 @@
 import os
 import re
+from datetime import datetime, timezone, timedelta
 
 import jwt
 from flask import request, redirect, render_template, url_for, jsonify
@@ -80,7 +81,7 @@ class UserController:
 
             if user and key == new_key:
                 # login_user(user)
-                token = jwt.encode({'email': email}, os.getenv('secret_key'), algorithm='HS256')
+                token = jwt.encode({'email': email, "exp": datetime.now(tz=timezone.utc) + timedelta(days=30)}, os.getenv('secret_key'), algorithm='HS256')
                 print(token)
                 return jsonify({'jwt': token}), 200
             else:
