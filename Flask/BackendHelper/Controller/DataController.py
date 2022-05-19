@@ -102,7 +102,7 @@ class DataController:
 
     @staticmethod
     @token_required
-    def getGeodata():
+    def getGeodata(current_user):
         try:
             y = 45
             x = 45

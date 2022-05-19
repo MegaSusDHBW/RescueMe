@@ -25,8 +25,7 @@ class UserController:
             password = json_data['password']
             passwordConfirm = json_data['passwordConfirm']
 
-
-            #Check if String is a Mail
+            # Check if String is a Mail
             regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
             if not re.match(regex, email):
                 return jsonify({"message": "Email is not valid"}), 400
@@ -38,7 +37,6 @@ class UserController:
             # Check if EMAIL is already in use
             if User.User.query.filter_by(email=email).first() is not None:
                 return jsonify({'message': 'Email already in use'}), 400
-
 
             salt = generateSalt()
             pepper = os.getenv('pepper')
