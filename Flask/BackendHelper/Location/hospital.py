@@ -18,7 +18,7 @@ def get_hospital_query_result(lat, lng):
             lat_lng={'lat': lat, 'lng': lng},
             types=[types.TYPE_HOSPITAL],
             rankby='distance',
-            keyword='hospital for humans',
+            keyword='Public Hospital',
         )
     except Exception as e:
         print('Could not get hospital query result: ', e)
