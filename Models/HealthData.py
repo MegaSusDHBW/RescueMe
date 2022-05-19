@@ -1,4 +1,5 @@
 from Models.InitDatabase import db
+from Models.User import User
 
 
 class HealthData(db.Model):
@@ -9,6 +10,6 @@ class HealthData(db.Model):
     bloodGroup = db.Column(db.String(64))
     birthData = db.Column(db.String(64))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    diseases = db.relationship("Diseases")
-    allergies = db.relationship("Allergies")
-    vaccines = db.relationship("Vaccines")
+    #diseases = db.relationship("Diseases")
+    #allergies = db.relationship("Allergies")
+    #vaccines = db.relationship("Vaccines")
