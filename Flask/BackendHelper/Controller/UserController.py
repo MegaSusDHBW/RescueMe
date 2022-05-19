@@ -20,13 +20,13 @@ class UserController:
         if request.method == 'POST':
             json_data = request.get_json()
             email = json_data['email']
-            #firstname = json_data['firstName']
-            #lastname = json_data['lastName']
+            firstname = json_data['firstName']
+            lastname = json_data['lastName']
             password = json_data['password']
             passwordConfirm = json_data['passwordConfirm']
 
 
-            f""" #Check if String is a Mail
+            #Check if String is a Mail
             regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
             if not re.match(regex, email):
                 return jsonify({"message": "Email is not valid"}), 400
@@ -35,28 +35,10 @@ class UserController:
             if password != passwordConfirm:
                 return jsonify({'message': 'Passwords do not match'}), 400
 
-            # Check if PASSWORD is at least 8 characters long
-            if len(password) < 8:
-                return jsonify({'message': 'Password must be at least 8 characters long'}), 400
-
-            # Check if PASSWORD contains at least one number
-            if password.isdigit():
-                return jsonify({'message': 'Password must contain at least one number'}), 400
-            # Check if PASSWORD contains at least one uppercase letter
-            if password.isupper():
-                return jsonify({'message': 'Password must contain at least one uppercase letter'}), 400
-            # Check if PASSWORD contains at least one lowercase letter
-            if password.islower():
-                return jsonify({'message': 'Password must contain at least one lowercase letter'}), 400
-            # Check if PASSWORD contains at least one special character
-            if password.isalnum():
-                return jsonify({'message': 'Password must contain at least one special character'}), 400"""
-
             # Check if EMAIL is already in use
-            '''if User.User.query.filter_by(email=email).first() is not None:
-                return jsonify({'message': 'Email already in use'}), 400'''
+            if User.User.query.filter_by(email=email).first() is not None:
+                return jsonify({'message': 'Email already in use'}), 400
 
-            #user = User.User.query.filter_by(email=email).first()
 
             salt = generateSalt()
             pepper = os.getenv('pepper')
@@ -66,8 +48,6 @@ class UserController:
             db.session.add(new_user)
             db.session.commit()
 
-            firstname = "h"
-            lastname = "a"
             welcome_mail(email, str(firstname) + " " + str(lastname))
 
             return redirect(url_for('login')), 200
