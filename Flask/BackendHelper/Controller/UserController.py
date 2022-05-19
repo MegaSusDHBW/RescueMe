@@ -1,10 +1,12 @@
 import os
+import re
 
 import jwt
 from flask import request, redirect, render_template, url_for, jsonify
 from flask_cors import cross_origin
 from flask_login import logout_user
 
+from Flask.BackendHelper.Controller.token_required import token_required
 from Flask.BackendHelper.Cryptography.CryptoHelper import generateSalt, hashPassword
 from Flask.BackendHelper.mail.mailhandler import pw_reset_mail, welcome_mail, sendEmergencyMail
 from Models import User
@@ -23,19 +25,20 @@ class UserController:
             password = json_data['password']
             passwordConfirm = json_data['passwordConfirm']
 
-            # Check if EMAIL is a valid email Todo: Only Pfusch
-            if email.find('@') == -1:
-                return jsonify({'message': 'Invalid email'}), 400
+
+            f""" #Check if String is a Mail
+            regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+            if not re.match(regex, email):
+                return jsonify({"message": "Email is not valid"}), 400
+
             # Check if PASSWORD and PASSWORD_CONFIRM are the same
             if password != passwordConfirm:
                 return jsonify({'message': 'Passwords do not match'}), 400
-            # Check if EMAIL is already in use
-            if User.User.query.filter_by(email=email).first() is not None:
-                return jsonify({'message': 'Email already in use'}), 400
 
             # Check if PASSWORD is at least 8 characters long
             if len(password) < 8:
                 return jsonify({'message': 'Password must be at least 8 characters long'}), 400
+
             # Check if PASSWORD contains at least one number
             if password.isdigit():
                 return jsonify({'message': 'Password must contain at least one number'}), 400
@@ -47,27 +50,30 @@ class UserController:
                 return jsonify({'message': 'Password must contain at least one lowercase letter'}), 400
             # Check if PASSWORD contains at least one special character
             if password.isalnum():
-                return jsonify({'message': 'Password must contain at least one special character'}), 400
+                return jsonify({'message': 'Password must contain at least one special character'}), 400"""
 
-            user = User.User.query.filter_by(email=email).first()
+            # Check if EMAIL is already in use
+            '''if User.User.query.filter_by(email=email).first() is not None:
+                return jsonify({'message': 'Email already in use'}), 400'''
 
-            if password == passwordConfirm and not user:
-                salt = generateSalt()
-                pepper = os.getenv('pepper')
-                pepper = bytes(pepper, 'utf-8')
-                db_password = hashPassword(salt + pepper, password)
-                new_user = User.User(email=email, salt=salt, password=db_password)
-                db.session.add(new_user)
-                db.session.commit()
+            #user = User.User.query.filter_by(email=email).first()
 
-                firstname = "h"
-                lastname = "a"
-                welcome_mail(email, str(firstname) + " " + str(lastname))
+            salt = generateSalt()
+            pepper = os.getenv('pepper')
+            pepper = bytes(pepper, 'utf-8')
+            db_password = hashPassword(salt + pepper, password)
+            new_user = User.User(email=email, salt=salt, password=db_password)
+            db.session.add(new_user)
+            db.session.commit()
 
-                return redirect(url_for('login')), 200
-            else:
-                print('Error')
-                return render_template('signUp.html'), 404
+            firstname = "h"
+            lastname = "a"
+            welcome_mail(email, str(firstname) + " " + str(lastname))
+
+            return redirect(url_for('login')), 200
+        else:
+            print('Error')
+            return render_template('signUp.html'), 404
 
     @staticmethod
     @cross_origin()
@@ -105,8 +111,9 @@ class UserController:
 
     @staticmethod
     @cross_origin()
-    def delete_user():
-        email = request.args['email']
+    @token_required
+    def delete_user(current_user):
+        email = current_user
         user = User.User.query.filter_by(email=email).first()
         if user:
             logout_user()
@@ -117,13 +124,15 @@ class UserController:
             return redirect(url_for('sign_up')), 200
 
     @staticmethod
-    @cross_origin()
-    def logout():
+    @cross_origin
+    @token_required
+    def logout(current_user):
         logout_user()
         return redirect(url_for('login'))
 
     @staticmethod
-    def changePassword():
+    @token_required
+    def changePassword(current_user):
         email = request.json["email"]
         password = request.json["password"]
         passwordConfirm = request.json["passwordConfirm"]
@@ -179,7 +188,8 @@ class UserController:
             return jsonify(response="Fehler"), 404
 
     @staticmethod
-    def callEmergencyContact():
+    @token_required
+    def callEmergencyContact(current_user):
         email = request.json["email"]
         accidentplace = request.json["accidentplace"]
         hospital = request.json["hospital"]

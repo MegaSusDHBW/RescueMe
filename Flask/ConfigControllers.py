@@ -1,3 +1,5 @@
+import json
+import pickle
 from functools import wraps
 
 import jwt
@@ -7,6 +9,7 @@ from Flask.BackendHelper.Controller.UserController import UserController
 from Flask.BackendHelper.Controller.DataController import DataController
 from Flask.BackendHelper.Controller.QRCodeController import QRCodeController
 from Flask.BackendHelper.Controller.ViewController import ViewController
+from Flask.BackendHelper.Cryptography.CryptoHelper import generateFernet
 from Flask.BackendHelper.DB.DBHelper import *
 from Models import User
 from Models.InitDatabase import *
@@ -60,4 +63,19 @@ app.add_url_rule("/forget-password", view_func=UserController.forgetPasswordSend
 app.add_url_rule("/change-password", view_func=UserController.forgetPassword, methods=['GET'])
 
 if __name__ == "__main__":
+    # Opening JSON file
+    with open('../globalFernetFile.json', 'r') as openfile:
+        # Reading from json file
+        json_object = json.load(openfile)
+    print(json_object["fernet"])
+    if json_object["fernet"] == "":
+        globalFernet = generateFernet()
+        dictionary = {
+            "fernet": pickle.dumps(globalFernet).decode("iso8859_16")
+        }
+        # Serializing json
+        json_object = json.dumps(dictionary, indent=4)
+        # Writing to sample.json
+        with open("../globalFernetFile.json", "w") as outfile:
+            outfile.write(json_object)
     app.run()

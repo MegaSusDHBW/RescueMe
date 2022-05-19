@@ -1,3 +1,4 @@
+import json
 import pickle
 
 from flask import request, send_file
@@ -17,10 +18,15 @@ class QRCodeController:
     @cross_origin()
     @token_required
     def generateQRCode(current_user):
-        fernetQuery = db.session.query(GlobalFernet.GlobalFernet).first()
+        f"""ernetQuery = db.session.query(GlobalFernet.GlobalFernet).first()
 
         globalFernet = fernetQuery.fernet
-        globalFernet = pickle.loads(globalFernet)
+        globalFernet = pickle.loads(globalFernet)"""
+        with open('../globalFernetFile.json', 'r') as openfile:
+            # Reading from json file
+            json_object = json.load(openfile)
+        print(json_object["fernet"])
+        globalFernet = pickle.loads(json_object["fernet"].encode("iso8859_16"))
 
         user_mail = request.args.get('email')
         date = request.args.get('date')
@@ -54,7 +60,8 @@ class QRCodeController:
             return send_file('../static/img/dino.png', mimetype='image/png'), 200
 
     @staticmethod
-    def readQRCode():
+    @token_required
+    def readQRCode(current_user):
         user_email = request.args.get('email')
         user_data = request.args.get('input')
 

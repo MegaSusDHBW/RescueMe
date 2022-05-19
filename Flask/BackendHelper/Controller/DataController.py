@@ -2,6 +2,7 @@ import what3words
 from flask import request, jsonify
 from flask_login import login_required
 
+from .token_required import token_required
 from ..Location.hospital import get_hospital_query_result
 from Models import EmergencyContact, User, HealthData
 from Models.InitDatabase import db
@@ -15,7 +16,8 @@ class DataController:
     '''
 
     @staticmethod
-    def setEmergencyContact():
+    @token_required
+    def setEmergencyContact(current_user):
         contact_json = request.get_json()
         try:
             firstname = contact_json["firstName"]
@@ -57,6 +59,7 @@ class DataController:
             return jsonify(response="Fehler beim Anlegen des Notfallkontakts"), 404
 
     @staticmethod
+    @token_required
     def setHealthData():
         healthdata_json = request.get_json()
         try:
@@ -98,18 +101,21 @@ class DataController:
     '''Getter'''
 
     @staticmethod
+    @token_required
     def getGeodata():
         try:
-            json_data = request.get_json()
-            Y = json_data["coords"]["longitude"]
-            X = json_data["coords"]["latitude"]
+            y = 45
+            x = 45
+            #json_data = request.get_json()
+            #x = json_data["coords"]["longitude"]
+            #X = json_data["coords"]["latitude"]
 
-            print("X: " + str(X))
-            print("Y:" + str(Y))
+            print("X: " + str(x))
+            print("Y:" + str(y))
 
             geocoder = what3words.Geocoder("U7LVW2RA")
 
-            res = geocoder.convert_to_3wa(what3words.Coordinates(X, Y))
+            res = geocoder.convert_to_3wa(what3words.Coordinates(x, y))
             print(res["words"])
 
             return jsonify(words=res["words"]), 200
@@ -117,19 +123,23 @@ class DataController:
             return jsonify(words="Fehler beim Umwandeln der Koordinaten in What3Words"), 404
 
     @staticmethod
+    @token_required
     def getHospitals():
         try:
-            json_data = request.get_json()
-            Y = json_data["coords"]["longitude"]
-            X = json_data["coords"]["latitude"]
+            y = 45
+            x = 45
+            #json_data = request.get_json()
+            #y = json_data["coords"]["longitude"]
+            #x = json_data["coords"]["latitude"]
 
-            hospital_json = get_hospital_query_result(X, Y)
+            hospital_json = get_hospital_query_result(x, y)
 
             return hospital_json, 200
         except:
             return jsonify(words="Fehler beim Umwandeln der Koordinaten in Google API")
 
     @staticmethod
+    @token_required
     def getHealthData():
         user_email = request.args.get("email")
 
@@ -153,6 +163,7 @@ class DataController:
         return jsonify(healthDataJSON), 200
 
     @staticmethod
+    @token_required
     def getEmergencyContact():
         user_email = request.args.get("email")
 
