@@ -60,7 +60,7 @@ class DataController:
 
     @staticmethod
     @token_required
-    def setHealthData():
+    def setHealthData(current_user):
         healthdata_json = request.get_json()
         try:
             firstname = healthdata_json["firstName"]
@@ -124,7 +124,7 @@ class DataController:
 
     @staticmethod
     @token_required
-    def getHospitals():
+    def getHospitals(current_user):
         try:
             y = 45
             x = 45
@@ -140,7 +140,7 @@ class DataController:
 
     @staticmethod
     @token_required
-    def getHealthData():
+    def getHealthData(current_user):
         user_email = request.args.get("email")
 
         user_data = db.session.query(User.User).filter(User.User.email == user_email).first()
@@ -164,7 +164,7 @@ class DataController:
 
     @staticmethod
     @token_required
-    def getEmergencyContact():
+    def getEmergencyContact(current_user):
         user_email = request.args.get("email")
 
         user_data = db.session.query(User.User).filter(User.User.email == user_email).first()
