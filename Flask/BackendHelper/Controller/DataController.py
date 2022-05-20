@@ -61,9 +61,9 @@ class DataController:
             return jsonify(response="Fehler beim Anlegen des Notfallkontakts"), 404
 
     @staticmethod
-    # @token_required
+    @token_required
     # Param current_user
-    def setHealthData():
+    def setHealthData(current_user):
         healthdata_json = request.get_json()
         try:
             firstname = healthdata_json["firstName"]
@@ -191,10 +191,10 @@ class DataController:
             return jsonify(words="Fehler beim Umwandeln der Koordinaten in Google API")
 
     @staticmethod
-    # @token_required
+    @token_required
     # current_user
-    def getHealthData():
-        user_email = request.args.get("email")
+    def getHealthData(current_user):
+        user_email = current_user
 
         user_data = db.session.query(User.User).filter(User.User.email == user_email).first()
 
@@ -237,7 +237,7 @@ class DataController:
     @staticmethod
     @token_required
     def getEmergencyContact(current_user):
-        user_email = request.args.get("email")
+        user_email = current_user,
 
         user_data = db.session.query(User.User).filter(User.User.email == user_email).first()
 

@@ -16,9 +16,9 @@ class QRCodeController:
 
     @staticmethod
     @cross_origin()
-    # @token_required
+    @token_required
     # Param current_user
-    def generateQRCode():
+    def generateQRCode(current_user):
         f"""ernetQuery = db.session.query(GlobalFernet.GlobalFernet).first()
 
         globalFernet = fernetQuery.fernet
@@ -61,9 +61,9 @@ class QRCodeController:
             return send_file('../static/img/dino.png', mimetype='image/png'), 200
 
     @staticmethod
-    @token_required
-    def readQRCode(current_user):
-        user_email = request.args.get('email')
+    #@token_required
+    def readQRCode():
+        #user_email = current_user
         user_data = request.args.get('input')
 
         # globalFernet
