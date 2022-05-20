@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import what3words
 from flask import request, jsonify
 from flask_login import login_required
@@ -59,8 +61,9 @@ class DataController:
             return jsonify(response="Fehler beim Anlegen des Notfallkontakts"), 404
 
     @staticmethod
-    @token_required
-    def setHealthData(current_user):
+    # @token_required
+    # Param current_user
+    def setHealthData():
         healthdata_json = request.get_json()
         try:
             firstname = healthdata_json["firstName"]
@@ -68,7 +71,8 @@ class DataController:
             organDonorState = healthdata_json["organDonorState"]
             bloodGroup = healthdata_json["bloodGroup"]
             user_mail = healthdata_json["userMail"]
-            birthdate = healthdata_json["birthDate"]
+            birthdate_str = healthdata_json["birthDate"]
+            birthdate = datetime.strptime(birthdate_str, "%d.%m.%Y")
             allergies = healthdata_json["allergies"]
             diseases = healthdata_json["diseases"]
             vaccines = healthdata_json["vaccines"]
@@ -84,26 +88,21 @@ class DataController:
                     db.session.commit()
                     user = User.User.query.filter_by(email=user_mail).first()
                     for allergy in allergies:
-                        print(allergy)
                         new_allergy = Allergies.Allergies(name=allergy['title'], health_id=user.healthData.id)
-                        print(new_allergy)
                         db.session.add(new_allergy)
                         db.session.commit()
                     for disease in diseases:
-                        print(disease)
                         new_disease = Diseases.Diseases(name=disease['title'], health_id=user.healthData.id)
-                        print(new_disease)
                         db.session.add(new_disease)
                         db.session.commit()
                     for vaccine in vaccines:
-                        print(vaccine)
                         new_vaccine = Vaccines.Vaccines(name=vaccine['title'], health_id=user.healthData.id)
-                        print(new_vaccine)
                         db.session.add(new_vaccine)
                         db.session.commit()
+                    db.session.commit()
                 else:
                     user_id = User.User.query.filter_by(email=user_mail).first()
-                    user_id = user_id.emergencyContact.id
+                    user_id = user_id.id
 
                     db.session.query(HealthData.HealthData).filter(
                         HealthData.HealthData.id == user_id).update(
@@ -112,10 +111,38 @@ class DataController:
                             HealthData.HealthData.lastname: lastname,
                             HealthData.HealthData.organDonorState: organDonorState,
                             HealthData.HealthData.bloodGroup: bloodGroup,
-                            HealthData.HealthData.birthdate: birthdate,
+                            HealthData.HealthData.birthdate: birthdate
                         },
                         synchronize_session=False)
                     db.session.commit()
+
+                    healthdata_id = HealthData.HealthData.query.filter_by(id=user_id).first()
+
+                    allergies_db = Allergies.Allergies.query.filter_by(health_id=healthdata_id.id).all()
+                    diseases_db = Diseases.Diseases.query.filter_by(health_id=healthdata_id.id).all()
+                    vaccines_db = Vaccines.Vaccines.query.filter_by(health_id=healthdata_id.id).all()
+                    for entry in allergies_db:
+                        db.session.delete(entry)
+                    for entry in diseases_db:
+                            db.session.delete(entry)
+                    for entry in vaccines_db:
+                            db.session.delete(entry)
+                    db.session.commit()
+
+                    for allergy in allergies:
+                        new_allergy = Allergies.Allergies(name=allergy['title'], health_id=healthdata_id.id)
+                        db.session.add(new_allergy)
+                        db.session.commit()
+                    for disease in diseases:
+                        new_disease = Diseases.Diseases(name=disease['title'], health_id=user.healthData.id)
+                        db.session.add(new_disease)
+                        db.session.commit()
+                    for vaccine in vaccines:
+                        new_vaccine = Vaccines.Vaccines(name=vaccine['title'], health_id=user.healthData.id)
+                        db.session.add(new_vaccine)
+                        db.session.commit()
+                    db.session.commit()
+
             else:
                 return jsonify(response="User nicht vorhanden"), 404
 
@@ -164,8 +191,9 @@ class DataController:
             return jsonify(words="Fehler beim Umwandeln der Koordinaten in Google API")
 
     @staticmethod
-    @token_required
-    def getHealthData(current_user):
+    # @token_required
+    # current_user
+    def getHealthData():
         user_email = request.args.get("email")
 
         user_data = db.session.query(User.User).filter(User.User.email == user_email).first()
@@ -177,11 +205,30 @@ class DataController:
                 healthDataJSON.update({"lastname": ""})
                 healthDataJSON.update({"organDonorState": ""})
                 healthDataJSON.update({"bloodgroup": ""})
+                healthDataJSON.update({"birthdate": ""})
+                healthDataJSON.update({"allergies": []})
+                healthDataJSON.update({"diseases": []})
+                healthDataJSON.update({"vaccines": []})
             else:
                 healthDataJSON.update({"firstname": user_data.healthData.firstname})
                 healthDataJSON.update({"lastname": user_data.healthData.lastname})
                 healthDataJSON.update({"organDonorState": user_data.healthData.organDonorState})
                 healthDataJSON.update({"bloodgroup": user_data.healthData.bloodGroup})
+                healthDataJSON.update({"birthdate": datetime.strftime(user_data.healthData.birthdate, "%d.%m.%Y")})
+
+                allergies_list = []
+                diseases_list = []
+                vaccines_list = []
+                for allergy in user_data.healthData.allergies:
+                    allergies_list.append({"title": allergy.name})
+                for disease in user_data.healthData.diseases:
+                    diseases_list.append({"title": disease.name})
+                for vaccine in user_data.healthData.vaccines:
+                    vaccines_list.append({"title": vaccine.name})
+                healthDataJSON.update({"allergies": allergies_list})
+                healthDataJSON.update({"diseases": diseases_list})
+                healthDataJSON.update({"vaccines": vaccines_list})
+
         else:
             print("GET HEALTHDATA User nicht gefunden")
 

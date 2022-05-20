@@ -16,8 +16,9 @@ class QRCodeController:
 
     @staticmethod
     @cross_origin()
-    @token_required
-    def generateQRCode(current_user):
+    # @token_required
+    # Param current_user
+    def generateQRCode():
         f"""ernetQuery = db.session.query(GlobalFernet.GlobalFernet).first()
 
         globalFernet = fernetQuery.fernet
