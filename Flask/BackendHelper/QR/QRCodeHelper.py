@@ -40,6 +40,7 @@ def createQRCode(qrcode_dict, fernet):
 
     try:
         img.save('../static/img/qrcode.png')
+        return encryptedJSON
     except:
         # img.save('Flask/BackendHelper/QR/qrcode.png')
         print("Fehler beim QR-Code-Erzeugen")

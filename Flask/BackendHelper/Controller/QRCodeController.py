@@ -8,7 +8,7 @@ from Flask.BackendHelper.Controller.token_required import token_required
 from Flask.BackendHelper.Cryptography.CryptoHelper import decryptData, generateFernet, encryptData
 from Flask.BackendHelper.QR.QRCodeHelper import generateDictForQRCode, createQRCode
 
-from Models import User, FernetKeys
+from Models import User, FernetKeys, FernetData
 from Models.InitDatabase import db
 
 
@@ -40,7 +40,11 @@ class QRCodeController:
 
                 user_info = db.session.query(User.User).filter(User.User.email == user_mail).first()
 
-                createQRCode(generateDictForQRCode(user_info), pickle.loads(decryptedFernet))
+                data = createQRCode(generateDictForQRCode(user_info), pickle.loads(decryptedFernet))
+
+                newFernetData = FernetData.FernetData(data=data, fernet=fernetKey)
+                db.session.add(newFernetData)
+                db.session.commit()
 
                 return send_file('../static/img/qrcode.png', mimetype='image/png'), 200
             else:
@@ -61,8 +65,8 @@ class QRCodeController:
             return send_file('../static/img/dino.png', mimetype='image/png'), 200
 
     @staticmethod
-    #@token_required
-    def readQRCode():
+    @token_required
+    def readQRCode(current_user):
         #user_email = current_user
         user_data = request.args.get('input')
 
@@ -74,7 +78,7 @@ class QRCodeController:
         globalFernet = pickle.loads(json_object["fernet"].encode("iso8859_16"))
 
         # LocalFernet
-        result = db.session.query(FernetKeys.FernetKeys).filter(FernetKeys.FernetKeys.email == user_email).first()
+        result = db.session.query(FernetData.FernetData).filter(FernetKeys.FernetKeys.data == user_data).first()
         localFernet = result.fernet
 
         decryptedFernet = decryptData(fernet=globalFernet,
