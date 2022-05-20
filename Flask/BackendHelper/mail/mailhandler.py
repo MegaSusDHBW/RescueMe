@@ -14,7 +14,8 @@ def send_mail(recipient, subject, body, attachments=None):
     # Single: attachments='Desktop/File 1/image1.png' (Path as String)
     # Multiple: attachments=['Desktop/File 1/image1.png','Desktop/File 1/gantt2.png'] (List with Paths as Strings)
     try:
-        helpdesk.send(to=recipient, subject=subject, contents=body, attachments=attachments, bcc='helpdesk@rescue-my-balls.de')
+        helpdesk.send(to=recipient, subject=subject, contents=body, attachments=attachments,
+                      bcc='helpdesk@rescue-my-balls.de')
     except Exception as e:
         print('Sending Mail has thrown a Error: {}'.format(e))
         return False
@@ -69,4 +70,19 @@ def sendEmergencyMail(to, firstnameEmergency, lastnameEmergency, firstname, last
           </body>
         </html>
         """.format(firstnameEmergency, lastnameEmergency, firstname, lastname, accidentplace, hospital)
+    send_mail(to, subject, body)
+
+
+def mail_changed(to, new_mail):
+    subject = "Ihre Mail wurde geändert!"
+    body = """\
+        <html>
+          <head></head>
+          <body>
+            <p>Hallo,<br>
+               Ihr Mail bei RescueMe wurde zu {} geändert!<br>
+            </p>
+          </body>
+        </html>
+        """.format(new_mail)
     send_mail(to, subject, body)

@@ -9,7 +9,7 @@ from flask_login import logout_user
 
 from Flask.BackendHelper.Controller.token_required import token_required
 from Flask.BackendHelper.Cryptography.CryptoHelper import generateSalt, hashPassword
-from Flask.BackendHelper.mail.mailhandler import pw_reset_mail, welcome_mail, sendEmergencyMail
+from Flask.BackendHelper.mail.mailhandler import pw_reset_mail, welcome_mail, sendEmergencyMail, mail_changed
 from Models import User
 from Models.InitDatabase import db
 
@@ -127,6 +127,46 @@ class UserController:
             db.session.commit()
         else:
             print("Fehler beim Passwortändern"), 404
+
+    @staticmethod
+    @cross_origin()
+    @token_required
+    def change_mail(current_user):
+        email = current_user
+        new_email = request.json["new_email"]
+        new_email_confirm = request.json["new_email_confirm"]
+
+        # Check if String is a Mail
+        regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+        if not re.match(regex, new_email):
+            return jsonify({"message": "Email is not valid"}), 400
+
+        if new_email == new_email_confirm:
+            user = User.User.query.filter_by(email=new_email).first()
+            if user:
+                return jsonify({'message': 'This mail is already registered'}), 400
+            else:
+                try:
+                    db.session.query(User.User).filter(
+                        User.User.email == email).update(
+                        {
+                            User.User.email: new_email,
+                        },
+                        synchronize_session=False)
+                    db.session.commit()
+                    token = jwt.encode({'email': new_email, "exp": datetime.now(tz=timezone.utc) + timedelta(days=30)},
+                                       os.getenv('secret_key'), algorithm='HS256')
+                    print(token)
+                    mail_changed(email, new_email)
+                    return jsonify({'jwt': token}), 200
+                except Exception as e:
+                    return jsonify({'message': '{}'.format(e)}), 400
+        else:
+            return jsonify({'message': 'Email do not match'}), 400
+
+
+
+
 
     @staticmethod
     def forgetPasswordSendMail():
