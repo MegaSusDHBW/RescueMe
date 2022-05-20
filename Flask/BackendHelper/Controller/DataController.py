@@ -4,7 +4,7 @@ from flask_login import login_required
 
 from .token_required import token_required
 from ..Location.hospital import get_hospital_query_result
-from Models import EmergencyContact, User, HealthData
+from Models import EmergencyContact, User, HealthData, Allergies, Diseases, Vaccines
 from Models.InitDatabase import db
 
 
@@ -68,15 +68,39 @@ class DataController:
             organDonorState = healthdata_json["organDonorState"]
             bloodGroup = healthdata_json["bloodGroup"]
             user_mail = healthdata_json["userMail"]
+            birthdate = healthdata_json["birthDate"]
+            allergies = healthdata_json["allergies"]
+            diseases = healthdata_json["diseases"]
+            vaccines = healthdata_json["vaccines"]
+
 
             user = User.User.query.filter_by(email=user_mail).first()
             if user:
                 if user.healthData is None:
                     new_healthdata = HealthData.HealthData(firstname=firstname, lastname=lastname,
                                                            organDonorState=organDonorState,
-                                                           bloodGroup=bloodGroup, user_id=user.id)
+                                                           bloodGroup=bloodGroup, birthdate=birthdate, user_id=user.id)
                     db.session.add(new_healthdata)
                     db.session.commit()
+                    user = User.User.query.filter_by(email=user_mail).first()
+                    for allergy in allergies:
+                        print(allergy)
+                        new_allergy = Allergies.Allergies(name=allergy['title'], health_id=user.healthData.id)
+                        print(new_allergy)
+                        db.session.add(new_allergy)
+                        db.session.commit()
+                    for disease in diseases:
+                        print(disease)
+                        new_disease = Diseases.Diseases(name=disease['title'], health_id=user.healthData.id)
+                        print(new_disease)
+                        db.session.add(new_disease)
+                        db.session.commit()
+                    for vaccine in vaccines:
+                        print(vaccine)
+                        new_vaccine = Vaccines.Vaccines(name=vaccine['title'], health_id=user.healthData.id)
+                        print(new_vaccine)
+                        db.session.add(new_vaccine)
+                        db.session.commit()
                 else:
                     user_id = User.User.query.filter_by(email=user_mail).first()
                     user_id = user_id.emergencyContact.id
@@ -87,7 +111,8 @@ class DataController:
                             HealthData.HealthData.firstname: firstname,
                             HealthData.HealthData.lastname: lastname,
                             HealthData.HealthData.organDonorState: organDonorState,
-                            HealthData.HealthData.bloodGroup: bloodGroup
+                            HealthData.HealthData.bloodGroup: bloodGroup,
+                            HealthData.HealthData.birthdate: birthdate,
                         },
                         synchronize_session=False)
                     db.session.commit()
