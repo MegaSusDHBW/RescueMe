@@ -1,8 +1,8 @@
 from Models.InitDatabase import db
-from Models import User
 
 
 class EmergencyContact(db.Model):
+    __tablename__ = 'emergencycontact'
     id = db.Column(db.Integer, primary_key=True, autoincrement="auto")
     firstname = db.Column(db.String(100), unique=False)
     lastname = db.Column(db.String(32), unique=False)

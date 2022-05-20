@@ -3,7 +3,7 @@ from flask import request, jsonify
 from flask_login import login_required
 
 from ..Location.hospital import get_hospital_query_result
-from Models import EmergencyContact, User, HealthData, Allergies
+from Models import User, EmergencyContact, HealthData, Allergies, Diseases, Vaccines
 from Models.InitDatabase import db
 
 
