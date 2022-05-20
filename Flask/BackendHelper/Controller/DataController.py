@@ -25,7 +25,7 @@ class DataController:
             birthdate = contact_json["birthDate"]
             phonenumber = contact_json["phoneNumber"]
             email = contact_json["email"]
-            user_mail = contact_json["userMail"]
+            user_mail = current_user
 
             user = User.User.query.filter_by(email=user_mail).first()
             if user:
