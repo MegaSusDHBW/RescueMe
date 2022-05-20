@@ -28,7 +28,7 @@ class QRCodeController:
         print(json_object["fernet"])
         globalFernet = pickle.loads(json_object["fernet"].encode("iso8859_16"))
 
-        user_mail = request.args.get('email')
+        user_mail = current_user
         date = request.args.get('date')
 
         try:
