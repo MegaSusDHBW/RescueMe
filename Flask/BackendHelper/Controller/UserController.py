@@ -111,7 +111,7 @@ class UserController:
 
     @staticmethod
     @token_required
-    def changePassword(current_user):
+    def change_password(current_user):
         email = request.json["email"]
         password = request.json["password"]
         passwordConfirm = request.json["passwordConfirm"]
@@ -165,11 +165,8 @@ class UserController:
             return jsonify({'message': 'Email do not match'}), 400
 
 
-
-
-
     @staticmethod
-    def forgetPasswordSendMail():
+    def forget_password_send_mail():
         email = request.json["email"]
         password = request.json["password"]
 
@@ -187,7 +184,7 @@ class UserController:
         return jsonify(response="Email gesendet"), 200
 
     @staticmethod
-    def forgetPassword():
+    def forget_password():
         # email confirmed
         email = request.args.get("email")
         password = request.args.get("password").encode("utf-8")
@@ -208,7 +205,7 @@ class UserController:
 
     @staticmethod
     @token_required
-    def callEmergencyContact(current_user):
+    def call_emergency_contact(current_user):
         email = request.json["email"]
         accidentplace = request.json["accidentplace"]
         hospital = request.json["hospital"]
