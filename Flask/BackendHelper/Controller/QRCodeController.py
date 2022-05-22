@@ -42,9 +42,11 @@ class QRCodeController:
 
                 data = createQRCode(generateDictForQRCode(user_info), pickle.loads(decryptedFernet))
 
-                newFernetData = FernetData.FernetData(data=data, fernet=fernetKey.fernet)
-                db.session.add(newFernetData)
-                db.session.commit()
+                exists = db.session.query(FernetData.FernetData).filter_by(data=data).first() is not None
+                if exists:
+                    newFernetData = FernetData.FernetData(data=data, fernet=fernetKey.fernet)
+                    db.session.add(newFernetData)
+                    db.session.commit()
 
                 return send_file('../static/img/qrcode.png', mimetype='image/png'), 200
             else:
