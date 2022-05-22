@@ -35,7 +35,7 @@ def welcome_mail(to, name):
            Es freut uns, Sie bei RescueMe begrüßen zu dürfen!<br>
            <br />
            Sie möchten sich als Ersthelfer verifizieren lassen?<br>
-           Bitte melden Sie sich bei einem unserer Support-Mitarbeiter unter <b>+49 151 59068341</b>
+           Bitte melden Sie sich bei einem unserer Support-Mitarbeiter unter <b>+4915115557523</b>
            und halten Sie Ihren Verifizierungscode bereit!<br>
            Ihr Verifizierungscode lautet: <b>{}</b><br>
            Wir freuen uns, Sie bald auf unserer Plattform willkommen heißen zu können!
