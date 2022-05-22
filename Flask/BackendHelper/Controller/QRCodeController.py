@@ -83,7 +83,7 @@ class QRCodeController:
         print(test)
         # LocalFernet
         result = db.session.query(FernetData.FernetData).filter(FernetData.FernetData.data == user_data.encode()).first()
-        if not result:
+        if result:
             localFernet = result.fernet
 
             decryptedFernet = decryptData(fernet=globalFernet,
