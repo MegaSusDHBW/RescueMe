@@ -42,8 +42,8 @@ class QRCodeController:
 
                 data = createQRCode(generateDictForQRCode(user_info), pickle.loads(decryptedFernet))
 
-                exists = db.session.query(FernetData.FernetData).filter_by(data=data).first() is not None
-                if not exists:
+                exists = db.session.query(FernetData.FernetData).filter_by(data=data).first()
+                if exists is None:
                     newFernetData = FernetData.FernetData(data=data, fernet=fernetKey.fernet)
                     db.session.add(newFernetData)
                     db.session.commit()
