@@ -81,15 +81,18 @@ class QRCodeController:
         print(test)
         # LocalFernet
         result = db.session.query(FernetData.FernetData).filter(FernetData.FernetData.data == user_data.encode()).first()
-        localFernet = result.fernet
+        if not result:
+            localFernet = result.fernet
 
-        decryptedFernet = decryptData(fernet=globalFernet,
-                                      encryptedData=localFernet)
+            decryptedFernet = decryptData(fernet=globalFernet,
+                                          encryptedData=localFernet)
 
-        fernet = pickle.loads(decryptedFernet)
+            fernet = pickle.loads(decryptedFernet)
 
-        # Data
-        decryptedData = decryptData(fernet=fernet,
-                                    encryptedData=user_data.encode('utf-8'))
+            # Data
+            decryptedData = decryptData(fernet=fernet,
+                                        encryptedData=user_data.encode('utf-8'))
 
-        return decryptedData.decode('utf-8')
+            return decryptedData.decode('utf-8')
+        else:
+            print("Kein passenden Eintrag in der DB gefunden")
