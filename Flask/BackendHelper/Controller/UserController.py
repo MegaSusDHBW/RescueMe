@@ -49,7 +49,7 @@ class UserController:
 
             welcome_mail(email, str(firstname) + " " + str(lastname))
 
-            return redirect(url_for('login')), 200
+            return redirect(url_for('login')), 201
         else:
             print('Error')
             return render_template('signUp.html'), 404
