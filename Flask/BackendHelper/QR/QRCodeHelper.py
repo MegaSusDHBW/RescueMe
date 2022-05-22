@@ -1,6 +1,7 @@
 import json
 
 import qrcode
+from PIL import Image
 
 from Flask.BackendHelper.Cryptography.CryptoHelper import encryptData
 
@@ -34,9 +35,19 @@ def createQRCode(qrcode_dict, fernet):
     # bytes in string umwandeln
     encryptedJSON = encryptedJSON.decode('utf-8')
     print(encryptedJSON)
+    qr = qrcode.QRCode(
+        error_correction=qrcode.constants.ERROR_CORRECT_H
+    )
     qr = qrcode.QRCode(box_size=100, border=1)
     qr.add_data(encryptedJSON)
+    logo = Image.open('../static/img/logo-qr.png')
+
     img = qr.make_image()
+    pos = ((img.size[0] - logo.size[0]) // 2,
+           (img.size[1] - logo.size[1]) // 2)
+    img = qr.make_image()
+    img.paste(logo, pos)
+
 
     try:
         img.save('../static/img/qrcode.png')

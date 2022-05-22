@@ -42,7 +42,7 @@ class QRCodeController:
 
                 data = createQRCode(generateDictForQRCode(user_info), pickle.loads(decryptedFernet))
 
-                newFernetData = FernetData.FernetData(data=data, fernet=fernetKey)
+                newFernetData = FernetData.FernetData(data=data, fernet=fernetKey.fernet)
                 db.session.add(newFernetData)
                 db.session.commit()
 
@@ -65,10 +65,10 @@ class QRCodeController:
             return send_file('../static/img/dino.png', mimetype='image/png'), 200
 
     @staticmethod
-    @token_required
-    def readQRCode(current_user):
+    #@token_required
+    def readQRCode():
         #user_email = current_user
-        user_data = request.args.get('input')
+        user_data = request.json['input']
 
         # globalFernet
         with open('../globalFernetFile.json', 'r') as openfile:
@@ -77,8 +77,10 @@ class QRCodeController:
         print(json_object["fernet"])
         globalFernet = pickle.loads(json_object["fernet"].encode("iso8859_16"))
 
+        test = db.session.query(FernetData.FernetData).all()
+        print(test)
         # LocalFernet
-        result = db.session.query(FernetData.FernetData).filter(FernetKeys.FernetKeys.data == user_data).first()
+        result = db.session.query(FernetData.FernetData).filter(FernetData.FernetData.data == user_data.encode()).first()
         localFernet = result.fernet
 
         decryptedFernet = decryptData(fernet=globalFernet,
@@ -88,6 +90,6 @@ class QRCodeController:
 
         # Data
         decryptedData = decryptData(fernet=fernet,
-                                    encryptedData=user_data)
+                                    encryptedData=user_data.encode('utf-8'))
 
-        return decryptedData
+        return decryptedData.decode('utf-8')
