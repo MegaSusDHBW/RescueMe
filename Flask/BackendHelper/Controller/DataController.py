@@ -161,7 +161,7 @@ class DataController:
             json_data = request.get_json()
             y = json_data["coords"]["longitude"]
             x = json_data["coords"]["latitude"]
-
+            print(json_data)
             print("X: " + str(x))
             print("Y:" + str(y))
 
