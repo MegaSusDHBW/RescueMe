@@ -1,8 +1,11 @@
+import os
 import json
 import pickle
 
-from flask import request, send_file
+from flask import request, send_file,jsonify
 from flask_cors import cross_origin
+
+import jwt
 
 from Flask.BackendHelper.Controller.token_required import token_required
 from Flask.BackendHelper.Cryptography.CryptoHelper import decryptData, generateFernet, encryptData
@@ -16,13 +19,30 @@ class QRCodeController:
 
     @staticmethod
     @cross_origin()
-    @token_required
+    #@token_required
     # Param current_user
-    def generateQRCode(current_user):
+    def generateQRCode():
         f"""ernetQuery = db.session.query(GlobalFernet.GlobalFernet).first()
 
         globalFernet = fernetQuery.fernet
         globalFernet = pickle.loads(globalFernet)"""
+
+        #get jwt from request args
+        token = None
+        token = request.args.get('jwt')
+        if not token:
+            return jsonify({'message': 'a valid token is missing'}), 401
+        try:
+            data = jwt.decode(token, os.getenv('secret_key'), algorithms=['HS256'])
+            user = User.User.query.filter_by(email=data['email']).first()
+            if user:
+                current_user = data['email']
+            else:
+                return jsonify({'message': 'Token seems to have non existent User'}), 401
+        except Exception as e:
+            return jsonify({'message': 'token is invalid', 'error': str(e)}), 401
+
+
         with open('../globalFernetFile.json', 'r') as openfile:
             # Reading from json file
             json_object = json.load(openfile)
