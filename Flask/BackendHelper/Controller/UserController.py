@@ -43,7 +43,7 @@ class UserController:
             pepper = os.getenv('pepper')
             pepper = bytes(pepper, 'utf-8')
             db_password = hashPassword(salt + pepper, password)
-            new_user = User.User(email=email, salt=salt, password=db_password)
+            new_user = User.User(email=email, salt=salt, password=db_password, isAdmin=False)
             db.session.add(new_user)
             db.session.commit()
 
@@ -81,7 +81,44 @@ class UserController:
 
             if user and key == new_key:
                 # login_user(user)
-                token = jwt.encode({'email': email, "exp": datetime.now(tz=timezone.utc) + timedelta(days=30)}, os.getenv('secret_key'), algorithm='HS256')
+                token = jwt.encode({'email': email, "exp": datetime.now(tz=timezone.utc) + timedelta(days=30)},
+                                   os.getenv('secret_key'), algorithm='HS256')
+                print(token)
+                return jsonify({'jwt': token}), 200
+            else:
+                return jsonify({'message': 'Check Credentials'}), 400
+        return jsonify({'message': 'Bullshit'}), 400
+
+    @staticmethod
+    @cross_origin()
+    def loginAdmin():
+        if request.method == 'POST':
+            json_data = request.get_json()
+            email = json_data['email']
+            password = json_data['password']
+
+            # Check empty string fields
+            if email == '' or password == '':
+                return jsonify({'message': 'Check Credentials'}), 400
+            elif not email or not password:
+                return jsonify({'message': 'Check Credentials'}), 400
+
+            user = User.User.query.filter_by(email=email).first()
+
+            if user:
+                salt = user.salt
+                pepper = os.getenv('pepper')
+                pepper = bytes(pepper, 'utf-8')
+                key = user.password
+                new_key = hashPassword(salt + pepper, password)
+                isAdmin = user.isAdmin
+            else:
+                return jsonify({'message': 'Check Credentials'}), 400
+
+            if user and key == new_key and isAdmin:
+                # login_user(user)
+                token = jwt.encode({'email': email, "exp": datetime.now(tz=timezone.utc) + timedelta(days=30)},
+                                   os.getenv('secret_key'), algorithm='HS256')
                 print(token)
                 return jsonify({'jwt': token}), 200
             else:
@@ -163,7 +200,6 @@ class UserController:
                     return jsonify({'message': '{}'.format(e)}), 400
         else:
             return jsonify({'message': 'Email do not match'}), 400
-
 
     @staticmethod
     def forget_password_send_mail():

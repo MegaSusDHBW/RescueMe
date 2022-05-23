@@ -48,9 +48,11 @@ app.add_url_rule("/read-qrcode", view_func=QRCodeController.readQRCode, methods=
 
 '''UserController'''
 # @app.route("/sign-up", methods=['GET', 'POST'])
-app.add_url_rule("/sign-up", view_func=UserController.sign_up, methods=['GET', 'POST'])
+app.add_url_rule("/sign-up", view_func=UserController.sign_up, methods=['POST'])
 # @app.route("/login", methods=['GET', 'POST'])
-app.add_url_rule("/login", view_func=UserController.login, methods=['GET', 'POST'])
+app.add_url_rule("/login", view_func=UserController.login, methods=['POST'])
+# loginAdmin
+app.add_url_rule("/login-admin", view_func=UserController.loginAdmin, methods=['POST'])
 # @app.route("/delete-user", methods=['GET', 'POST'])
 app.add_url_rule("/delete-user", view_func=UserController.delete_user, methods=['GET', 'POST'])
 # @app.route("/logout")
