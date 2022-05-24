@@ -7,7 +7,7 @@ from flask_cors import cross_origin
 
 import jwt
 
-from Flask.BackendHelper.Controller.token_required import token_required
+from Flask.BackendHelper.Controller.token_required import token_required, param_required
 from Flask.BackendHelper.Cryptography.CryptoHelper import decryptData, generateFernet, encryptData
 from Flask.BackendHelper.QR.QRCodeHelper import generateDictForQRCode, createQRCode
 
@@ -19,15 +19,15 @@ class QRCodeController:
 
     @staticmethod
     @cross_origin()
-    #@token_required
+    @param_required
     # Param current_user
-    def generateQRCode():
+    def generateQRCode(current_user):
         f"""ernetQuery = db.session.query(GlobalFernet.GlobalFernet).first()
 
         globalFernet = fernetQuery.fernet
         globalFernet = pickle.loads(globalFernet)"""
 
-        #get jwt from request args
+        f'''#get jwt from request args
         token = None
         token = request.args.get('jwt')
         if not token:
@@ -40,7 +40,7 @@ class QRCodeController:
             else:
                 return jsonify({'message': 'Token seems to have non existent User'}), 401
         except Exception as e:
-            return jsonify({'message': 'token is invalid', 'error': str(e)}), 401
+            return jsonify({'message': 'token is invalid', 'error': str(e)}), 401'''
 
 
         with open('../globalFernetFile.json', 'r') as openfile:
