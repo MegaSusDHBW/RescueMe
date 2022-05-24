@@ -22,7 +22,7 @@ def get_hospital_query_result(lat, lng):
             keyword='Public Hospital',
             language='de'
         )
-        return query_result_hospital
+        # return query_result_hospital
     except Exception as e:
         print('Could not get hospital query result: ', e)
         return e
