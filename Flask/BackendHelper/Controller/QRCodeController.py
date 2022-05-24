@@ -7,7 +7,7 @@ from flask_cors import cross_origin
 
 import jwt
 
-from Flask.BackendHelper.Controller.token_required import token_required, param_required
+from Flask.BackendHelper.Controller.token import token_required, param_required
 from Flask.BackendHelper.Cryptography.CryptoHelper import decryptData, generateFernet, encryptData
 from Flask.BackendHelper.QR.QRCodeHelper import generateDictForQRCode, createQRCode
 

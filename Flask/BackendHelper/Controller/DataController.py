@@ -4,7 +4,7 @@ import what3words
 from flask import request, jsonify
 from flask_login import login_required
 
-from .token_required import token_required
+from .token import token_required
 from ..Location.hospital import get_hospital_query_result
 from Models import EmergencyContact, User, HealthData, Allergies, Diseases, Vaccines
 from Models.InitDatabase import db

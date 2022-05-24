@@ -1,3 +1,4 @@
+import datetime
 import os
 from dotenv import load_dotenv
 from Models import User
@@ -56,3 +57,8 @@ def param_required(f):
         return f(current_user, *args, **kwargs)
 
     return decorator
+
+def generate_jwt(mail):
+    token = jwt.encode({'email': mail, 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=30)},
+                       os.getenv('secret_key'), algorithm='HS256')
+    return token

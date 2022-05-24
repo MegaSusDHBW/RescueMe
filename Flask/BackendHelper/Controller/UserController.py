@@ -7,7 +7,7 @@ from flask import request, redirect, render_template, url_for, jsonify
 from flask_cors import cross_origin
 from flask_login import logout_user
 
-from Flask.BackendHelper.Controller.token_required import token_required
+from Flask.BackendHelper.Controller.token import token_required, generate_jwt
 from Flask.BackendHelper.Cryptography.CryptoHelper import generateSalt, hashPassword
 from Flask.BackendHelper.mail.mailhandler import pw_reset_mail, welcome_mail, sendEmergencyMail, mail_changed
 from Models import User
@@ -81,8 +81,7 @@ class UserController:
 
             if user and key == new_key:
                 # login_user(user)
-                token = jwt.encode({'email': email, "exp": datetime.now(tz=timezone.utc) + timedelta(days=30)},
-                                   os.getenv('secret_key'), algorithm='HS256')
+                token = generate_jwt(email)
                 print(token)
                 return jsonify({'jwt': token}), 200
             else:
@@ -191,8 +190,7 @@ class UserController:
                         },
                         synchronize_session=False)
                     db.session.commit()
-                    token = jwt.encode({'email': new_email, "exp": datetime.now(tz=timezone.utc) + timedelta(days=30)},
-                                       os.getenv('secret_key'), algorithm='HS256')
+                    token = generate_jwt(email)
                     print(token)
                     mail_changed(email, new_email)
                     return jsonify({'jwt': token}), 200
