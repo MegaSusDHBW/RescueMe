@@ -172,7 +172,7 @@ class DataController:
 
             return jsonify(words=res["words"]), 200
         except:
-            return jsonify(words="Fehler beim Umwandeln der Koordinaten in What3Words"), 404
+            return jsonify(words="Fehler beim Umwandeln der Koordinaten in What3Words"), 500
 
     @staticmethod
     @token_required
@@ -188,7 +188,7 @@ class DataController:
 
             return hospital_json, 200
         except:
-            return jsonify(words="Fehler beim Umwandeln der Koordinaten in Google API")
+            return jsonify(words="Fehler beim Umwandeln der Koordinaten in Google API"), 500
 
     @staticmethod
     @token_required
