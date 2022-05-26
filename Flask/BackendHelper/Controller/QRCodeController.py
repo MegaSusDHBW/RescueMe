@@ -22,12 +22,12 @@ class QRCodeController:
     @param_required
     # Param current_user
     def generateQRCode(current_user):
-        f"""ernetQuery = db.session.query(GlobalFernet.GlobalFernet).first()
+        """fernetQuery = db.session.query(GlobalFernet.GlobalFernet).first()
 
         globalFernet = fernetQuery.fernet
         globalFernet = pickle.loads(globalFernet)"""
 
-        f'''#get jwt from request args
+        '''f#get jwt from request args
         token = None
         token = request.args.get('jwt')
         if not token:
