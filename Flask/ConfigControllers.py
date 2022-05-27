@@ -55,8 +55,6 @@ app.add_url_rule("/login", view_func=UserController.login, methods=['POST'])
 app.add_url_rule("/login-admin", view_func=UserController.loginAdmin, methods=['POST'])
 # @app.route("/delete-user", methods=['GET', 'POST'])
 app.add_url_rule("/delete-user", view_func=UserController.delete_user, methods=['GET', 'POST'])
-# @app.route("/logout")
-app.add_url_rule("/logout", view_func=UserController.logout, methods=['GET', 'POST'])
 # change PW
 app.add_url_rule("/change-password", view_func=UserController.change_password, methods=['POST'])
 # change Mail
@@ -82,4 +80,4 @@ if __name__ == "__main__":
         # Writing to sample.json
         with open("../globalFernetFile.json", "w") as outfile:
             outfile.write(json_object)
-    app.run()
+    app.run(host='178.63.84.123', port=5000)

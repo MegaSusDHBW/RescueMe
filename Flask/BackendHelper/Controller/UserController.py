@@ -7,7 +7,7 @@ from flask import request, redirect, render_template, url_for, jsonify
 from flask_cors import cross_origin
 from flask_login import logout_user
 
-from Flask.BackendHelper.Controller.token import token_required, generate_jwt
+from Flask.BackendHelper.Controller.token import token_required, generate_jwt, generate_pw_jwt, password_change
 from Flask.BackendHelper.Cryptography.CryptoHelper import generateSalt, hashPassword
 from Flask.BackendHelper.mail.mailhandler import pw_reset_mail, welcome_mail, sendEmergencyMail, mail_changed
 from Models import User
@@ -204,21 +204,20 @@ class UserController:
             pepper = os.getenv('pepper')
             pepper = bytes(pepper, 'utf-8')
             password = hashPassword(salt + pepper, password)
-            # TODO
-            pw_reset_mail(email,
-                          "http://localhost:5000/change-password?email=" + str(email) + "&password=" + password.decode(
-                              "iso8859_16"))
-            pw_reset_mail(email,
-                          "http://localhost:5000/change-password?email={}&password={}".format(email, password.decode(
-                              "iso8859_16")))
+
+            jwt_pw = generate_pw_jwt(email, password)
+
+            # TODO: Change Localhost to Server
+            pw_reset_mail(email, "http://localhost:5000/change-password?jwt={}".format(jwt_pw))
 
         return jsonify(response="Email gesendet"), 200
 
     @staticmethod
-    def forget_password():
+    @password_change
+    def forget_password(email, password):
         # email confirmed
-        email = request.args.get("email")
-        password = request.args.get("password").encode("utf-8")
+        #email = request.args.get("email")
+        #password = request.args.get("password").encode("utf-8")
 
         user = User.User.query.filter_by(email=email).first()
         if user:
