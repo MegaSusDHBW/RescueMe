@@ -131,19 +131,13 @@ class UserController:
         email = current_user
         user = User.User.query.filter_by(email=email).first()
         if user:
-            logout_user()
             db.session.delete(user)
             db.session.commit()
             return redirect(url_for('login')), 200
         else:
             return redirect(url_for('sign_up')), 200
 
-    @staticmethod
-    @cross_origin
-    @token_required
-    def logout(current_user):
-        logout_user()
-        return redirect(url_for('login'))
+
 
     @staticmethod
     @token_required
@@ -214,6 +208,9 @@ class UserController:
             pw_reset_mail(email,
                           "http://localhost:5000/change-password?email=" + str(email) + "&password=" + password.decode(
                               "iso8859_16"))
+            pw_reset_mail(email,
+                          "http://localhost:5000/change-password?email={}&password={}".format(email, password.decode(
+                              "iso8859_16")))
 
         return jsonify(response="Email gesendet"), 200
 

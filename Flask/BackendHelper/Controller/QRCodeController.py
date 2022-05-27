@@ -10,6 +10,7 @@ import jwt
 from Flask.BackendHelper.Controller.token import token_required, param_required
 from Flask.BackendHelper.Cryptography.CryptoHelper import decryptData, generateFernet, encryptData
 from Flask.BackendHelper.QR.QRCodeHelper import generateDictForQRCode, createQRCode
+from Flask.BackendHelper.mail.mailhandler import sendEmergencyMail
 
 from Models import User, FernetKeys, FernetData
 from Models.InitDatabase import db
@@ -100,7 +101,7 @@ class QRCodeController:
         globalFernet = pickle.loads(json_object["fernet"].encode("iso8859_16"))
 
         test = db.session.query(FernetData.FernetData).all()
-        print(test)
+        #print(test)
         # LocalFernet
         result = db.session.query(FernetData.FernetData).filter(FernetData.FernetData.data == user_data.encode()).first()
         if result:
@@ -114,6 +115,13 @@ class QRCodeController:
             # Data
             decryptedData = decryptData(fernet=fernet,
                                         encryptedData=user_data.encode('utf-8'))
+
+            email_query = db.session.query(FernetKeys.FernetKeys).filter(
+                FernetKeys.FernetKeys.fernet == result.fernet).first()
+            email = email_query.email
+            user = db.session.query(User.User).filter(User.User.email == email).first()
+            sendEmergencyMail(user.emergencyContact.email, user.emergencyContact.firstname,
+                              user.emergencyContact.lastname, user.healthData.firstname, user.healthData.lastname)
 
             return decryptedData.decode('utf-8')
         else:

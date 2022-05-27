@@ -63,7 +63,7 @@ def pw_reset_mail(to, url):
     send_mail(to, subject, body)
 
 
-def sendEmergencyMail(to, firstnameEmergency, lastnameEmergency, firstname, lastname, accidentplace, hospital):
+def sendEmergencyMail(to, firstnameEmergency, lastnameEmergency, firstname, lastname, accidentplace=None, hospital=None):
     subject = "Ihr Angehöriger hatte einen NOTFALL!"
     body = """\
         <html>
