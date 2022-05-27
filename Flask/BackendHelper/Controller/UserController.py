@@ -201,9 +201,7 @@ class UserController:
         user = User.User.query.filter_by(email=email).first()
         if user:
             jwt_pw = generate_pw_jwt(email, password)
-
-            # TODO: Change Localhost to Server
-            pw_reset_mail(email, "http://localhost:5000/change-password?jwt={}".format(jwt_pw))
+            pw_reset_mail(email, "http://178.63.83.123:5000/change-password?jwt={}".format(jwt_pw))
 
         return jsonify(response="Email gesendet"), 200
 
