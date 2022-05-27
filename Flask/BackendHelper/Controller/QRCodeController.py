@@ -63,11 +63,18 @@ class QRCodeController:
 
                 data = createQRCode(generateDictForQRCode(user_info), pickle.loads(decryptedFernet))
 
-                exists = db.session.query(FernetData.FernetData).filter_by(data=data).first()
+                exists = db.session.query(FernetData.FernetData).filter_by(fernet=fernetKey.fernet).first()
                 if exists is None:
                     newFernetData = FernetData.FernetData(data=data, fernet=fernetKey.fernet)
                     db.session.add(newFernetData)
                     db.session.commit()
+                else:
+                    if exists.data == data:
+                        pass
+                    else:
+                        newFernetData = FernetData.FernetData(data=data, fernet=fernetKey.fernet)
+                        db.session.add(newFernetData)
+                        db.session.commit()
 
                 return send_file('../static/img/qrcode.png', mimetype='image/png'), 200
             else:
@@ -100,10 +107,9 @@ class QRCodeController:
         print(json_object["fernet"])
         globalFernet = pickle.loads(json_object["fernet"].encode("iso8859_16"))
 
-        test = db.session.query(FernetData.FernetData).all()
-        #print(test)
         # LocalFernet
-        result = db.session.query(FernetData.FernetData).filter(FernetData.FernetData.data == user_data.encode()).first()
+        result = db.session.query(FernetData.FernetData).filter(
+            FernetData.FernetData.data == user_data.encode()).order_by(FernetData.FernetData.id.desc()).first()
         if result:
             localFernet = result.fernet
 
@@ -120,8 +126,11 @@ class QRCodeController:
                 FernetKeys.FernetKeys.fernet == result.fernet).first()
             email = email_query.email
             user = db.session.query(User.User).filter(User.User.email == email).first()
-            sendEmergencyMail(user.emergencyContact.email, user.emergencyContact.firstname,
+
+            if user.emergencyContact is not None:
+                sendEmergencyMail(user.emergencyContact.email, user.emergencyContact.firstname,
                               user.emergencyContact.lastname, user.healthData.firstname, user.healthData.lastname)
+
 
             return decryptedData.decode('utf-8')
         else:

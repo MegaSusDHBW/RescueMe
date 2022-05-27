@@ -8,6 +8,10 @@ from .token import token_required
 from ..Location.hospital import get_hospital_query_result
 from Models import EmergencyContact, User, HealthData, Allergies, Diseases, Vaccines
 from Models.InitDatabase import db
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class DataController:
@@ -171,7 +175,7 @@ class DataController:
             print("X: " + str(x))
             print("Y:" + str(y))
 
-            geocoder = what3words.Geocoder("U7LVW2RA")
+            geocoder = what3words.Geocoder(os.getenv('w3w'), language="de")
 
             res = geocoder.convert_to_3wa(what3words.Coordinates(x, y))
             print(res["words"])
