@@ -15,12 +15,12 @@ def generateDictForQRCode(user_info):
         qrcode_dict.update({"lastname": user_info.healthData.lastname})
         qrcode_dict.update({"organDonorState": user_info.healthData.organDonorState})
         qrcode_dict.update({"bloodGroup": user_info.healthData.bloodGroup})
-        qrcode_dict.update({"birthDate": user_info.healthData.birthdate})
+        qrcode_dict.update({"birthDate": str(user_info.healthData.birthdate)})
     if user_info.emergencyContact:
         qrcode_dict.update({"emergencyEmail": user_info.emergencyContact.email})
         qrcode_dict.update({"emergencyFirstname": user_info.emergencyContact.firstname})
         qrcode_dict.update({"emergencyLastname": user_info.emergencyContact.lastname})
-        qrcode_dict.update({"emergencyBirthday": user_info.emergencyContact.birthdate})
+        qrcode_dict.update({"emergencyBirthday": str(user_info.emergencyContact.birthdate)})
         qrcode_dict.update({"emergencyPhone": user_info.emergencyContact.phonenumber})
     if user_info.healthData.allergies:
         allergies = []

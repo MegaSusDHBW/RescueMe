@@ -24,7 +24,10 @@ class DataController:
         try:
             firstname = contact_json["firstName"]
             lastname = contact_json["lastName"]
-            birthdate = contact_json["birthDate"]
+            if contact_json['birthDate'] == '':
+                birthdate = None
+            else:
+                birthdate = datetime.strptime(contact_json["birthDate"], "%d.%m.%Y")
             phonenumber = contact_json["phoneNumber"]
             email = contact_json["email"]
             user_mail = current_user
@@ -71,8 +74,10 @@ class DataController:
             organDonorState = healthdata_json["organDonorState"]
             bloodGroup = healthdata_json["bloodGroup"]
             user_mail = healthdata_json["userMail"]
-            birthdate_str = healthdata_json["birthDate"]
-            birthdate = datetime.strptime(birthdate_str, "%d.%m.%Y")
+            if healthdata_json['birthDate'] == '':
+                birthdate = None
+            else:
+                birthdate = datetime.strptime(healthdata_json["birthDate"], "%d.%m.%Y")
             allergies = healthdata_json["allergies"]
             diseases = healthdata_json["diseases"]
             vaccines = healthdata_json["vaccines"]
@@ -158,6 +163,7 @@ class DataController:
         try:
             #y = 45
             #x = 45
+            print(request)
             json_data = request.get_json()
             y = json_data["coords"]["longitude"]
             x = json_data["coords"]["latitude"]
@@ -171,7 +177,8 @@ class DataController:
             print(res["words"])
 
             return jsonify(words=res["words"]), 200
-        except:
+        except Exception as e:
+            print(e)
             return jsonify(words="Fehler beim Umwandeln der Koordinaten in What3Words"), 500
 
     @staticmethod
@@ -214,7 +221,7 @@ class DataController:
                 healthDataJSON.update({"lastname": user_data.healthData.lastname})
                 healthDataJSON.update({"organDonorState": user_data.healthData.organDonorState})
                 healthDataJSON.update({"bloodgroup": user_data.healthData.bloodGroup})
-                healthDataJSON.update({"birthdate": datetime.strftime(user_data.healthData.birthdate, "%d.%m.%Y")})
+                healthDataJSON.update({"birthdate": user_data.healthData.birthdate})
 
                 allergies_list = []
                 diseases_list = []
