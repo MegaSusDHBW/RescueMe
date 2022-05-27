@@ -36,7 +36,7 @@ def generateDictForQRCode(user_info):
         vaccines = []
         for v in user_info.healthData.vaccines:
             vaccines.append({"title": v.name})
-        qrcode_dict.update({"diseases": vaccines})
+        qrcode_dict.update({"vaccines": vaccines})
 
     return qrcode_dict
 
