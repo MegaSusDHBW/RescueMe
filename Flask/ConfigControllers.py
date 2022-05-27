@@ -80,4 +80,4 @@ if __name__ == "__main__":
         # Writing to sample.json
         with open("../globalFernetFile.json", "w") as outfile:
             outfile.write(json_object)
-    app.run(host='178.63.84.123', port=5000)
+    app.run()

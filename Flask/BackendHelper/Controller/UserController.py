@@ -228,7 +228,7 @@ class UserController:
                 synchronize_session=False)
             db.session.commit()
 
-            return render_template("forgetPasswort.html"), 200
+            return render_template("forgetPassword.html"), 200
         else:
             return jsonify(response="Fehler"), 404
 
