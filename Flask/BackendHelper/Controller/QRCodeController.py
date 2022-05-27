@@ -1,6 +1,8 @@
 import os
 import json
 import pickle
+import zlib
+from base64 import b64decode
 
 from flask import request, send_file,jsonify
 from flask_cors import cross_origin
@@ -52,6 +54,7 @@ class QRCodeController:
 
         user_mail = current_user
         date = request.args.get('date')
+
 
         try:
             fernetKey = db.session.query(FernetKeys.FernetKeys).filter_by(email=user_mail).first()
@@ -121,6 +124,8 @@ class QRCodeController:
             # Data
             decryptedData = decryptData(fernet=fernet,
                                         encryptedData=user_data.encode('utf-8'))
+
+            decryptedData = zlib.decompress(b64decode(decryptedData))
 
             email_query = db.session.query(FernetKeys.FernetKeys).filter(
                 FernetKeys.FernetKeys.fernet == result.fernet).first()

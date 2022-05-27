@@ -114,7 +114,7 @@ class DataController:
                     user_id = user_id.id
 
                     db.session.query(HealthData.HealthData).filter(
-                        HealthData.HealthData.id == user_id).update(
+                        HealthData.HealthData.user_id == user_id).update(
                         {
                             HealthData.HealthData.firstname: firstname,
                             HealthData.HealthData.lastname: lastname,
@@ -125,7 +125,7 @@ class DataController:
                         synchronize_session=False)
                     db.session.commit()
 
-                    healthdata_id = HealthData.HealthData.query.filter_by(id=user_id).first()
+                    healthdata_id = HealthData.HealthData.query.filter_by(user_id=user_id).first()
 
                     allergies_db = Allergies.Allergies.query.filter_by(health_id=healthdata_id.id).all()
                     diseases_db = Diseases.Diseases.query.filter_by(health_id=healthdata_id.id).all()

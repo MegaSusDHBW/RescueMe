@@ -1,9 +1,16 @@
 import json
-
+import zlib
+from base64 import b64encode, b64decode
 import qrcode
 from PIL import Image
 
 from Flask.BackendHelper.Cryptography.CryptoHelper import encryptData
+
+import zlib, json, base64
+
+ZIPJSON_KEY = 'base64(zip(o))'
+
+
 
 
 def generateDictForQRCode(user_info):
@@ -43,7 +50,8 @@ def generateDictForQRCode(user_info):
 
 def createQRCode(qrcode_dict, fernet):
     data = json.dumps(qrcode_dict).encode('utf-8')
-
+    data = zlib.compress(data)
+    data = b64encode(data)
     # daten mit fernet verschlüsseln
     encryptedJSON = encryptData(data, fernet)
     print(encryptedJSON)
@@ -51,10 +59,7 @@ def createQRCode(qrcode_dict, fernet):
     # bytes in string umwandeln
     encryptedJSON = encryptedJSON.decode('utf-8')
     print(encryptedJSON)
-    qr = qrcode.QRCode(
-        error_correction=qrcode.constants.ERROR_CORRECT_H
-    )
-    qr = qrcode.QRCode(box_size=100, border=1)
+    qr = qrcode.QRCode(box_size=100, border=1, error_correction=qrcode.constants.ERROR_CORRECT_L)
     qr.add_data(encryptedJSON)
     logo = Image.open('../static/img/logo-qr.png')
 
