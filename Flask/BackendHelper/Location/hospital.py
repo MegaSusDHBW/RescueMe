@@ -1,3 +1,4 @@
+from flask import jsonify
 from googleplaces import GooglePlaces, types, lang
 import json
 import os
@@ -16,20 +17,29 @@ def get_hospital_query_result(lat, lng):
     try:
         query_result_hospital = google_places.nearby_search(
             lat_lng={'lat': lat, 'lng': lng},
-            types=[types.TYPE_HOSPITAL],
             rankby='distance',
-            keyword='hospital for humans',
+            types=[types.TYPE_HOSPITAL],
+            keyword='Public Hospital',
+            language='de',
         )
+        # keyword='Public Hospital',
+        # types=[types.TYPE_HOSPITAL],
+        # return query_result_hospital
     except Exception as e:
         print('Could not get hospital query result: ', e)
-        return None
+        return e
 
     query_dict = {}
     i = 0
     for place in query_result_hospital.places:
-        query_dict[i] = [place.name, str(place.geo_location['lat']), str(place.geo_location['lng'])]
+        #query_dict[i] = [place.name, str(place.geo_location['lat']), str(place.geo_location['lng'])]
+        query_dict[i] = {
+            'name': place.name,
+            'latitude': place.geo_location['lat'],
+            'longitude': place.geo_location['lng']
+        }
         i += 1
 
-    json_hospital = json.dumps(query_dict, indent=4, ensure_ascii=False)
+    json_hospital = jsonify(query_dict)
 
     return json_hospital

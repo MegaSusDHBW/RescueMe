@@ -1,3 +1,6 @@
+import random
+import time
+
 import yagmail
 import os
 from dotenv import load_dotenv
@@ -14,7 +17,8 @@ def send_mail(recipient, subject, body, attachments=None):
     # Single: attachments='Desktop/File 1/image1.png' (Path as String)
     # Multiple: attachments=['Desktop/File 1/image1.png','Desktop/File 1/gantt2.png'] (List with Paths as Strings)
     try:
-        helpdesk.send(to=recipient, subject=subject, contents=body, attachments=attachments, bcc='helpdesk@rescue-my-balls.de')
+        helpdesk.send(to=recipient, subject=subject, contents=body, attachments=attachments,
+                      bcc='helpdesk@rescue-my-balls.de')
     except Exception as e:
         print('Sending Mail has thrown a Error: {}'.format(e))
         return False
@@ -23,18 +27,24 @@ def send_mail(recipient, subject, body, attachments=None):
 # Welcome Mail to a new user containing his/her username
 def welcome_mail(to, name):
     # Send Welcome Mail to the given recipient
+    code = random.randrange(100000, 1000000)
     subject = "Herzlich Willkommen bei RescueMe! :)"
     body = """\
     <html>
       <head></head>
       <body>
-        <p>Herzlich Willkommen {}<br>
-           Es freut uns Sie bei RescueMe begrüßen zu dürfen!<br>
-           Hier ist ihr  <a href="https://puginarug.com/">Registrierungslink</a>!
+        <p>Herzlich Willkommen, {}<br>
+           Es freut uns, Sie bei RescueMe begrüßen zu dürfen!<br>
+           <br />
+           Sie möchten sich als Ersthelfer verifizieren lassen?<br>
+           Bitte melden Sie sich bei einem unserer Support-Mitarbeiter unter <b>+49 171 2303908</b>
+           und halten Sie Ihren Verifizierungscode bereit!<br>
+           Ihr Verifizierungscode lautet: <b>{}</b><br>
+           Wir freuen uns, Sie bald auf unserer Plattform willkommen heißen zu können!
         </p>
       </body>
     </html>
-    """.format(name)
+    """.format(name, code)
     send_mail(to, subject, body)
 
 
@@ -55,7 +65,7 @@ def pw_reset_mail(to, url):
     send_mail(to, subject, body)
 
 
-def sendEmergencyMail(to, firstnameEmergency, lastnameEmergency, firstname, lastname, accidentplace, hospital):
+def sendEmergencyMail(to, firstnameEmergency, lastnameEmergency, firstname, lastname, accidentplace=None, hospital=None):
     subject = "Ihr Angehöriger hatte einen NOTFALL!"
     body = """\
         <html>
@@ -70,3 +80,25 @@ def sendEmergencyMail(to, firstnameEmergency, lastnameEmergency, firstname, last
         </html>
         """.format(firstnameEmergency, lastnameEmergency, firstname, lastname, accidentplace, hospital)
     send_mail(to, subject, body)
+
+
+def mail_changed(to, new_mail):
+    subject = "Ihre Mail wurde geändert!"
+    body = """\
+        <html>
+          <head></head>
+          <body>
+            <p>Hallo,<br>
+               Ihr Mail bei RescueMe wurde zu {} geändert!<br>
+            </p>
+          </body>
+        </html>
+        """.format(new_mail)
+    send_mail(to, subject, body)
+
+
+if __name__ == '__main__':
+    while True:
+        welcome_mail('florian21albert@gmx.de', 'Florian')
+        time.sleep(5)
+        print('Mail sent')

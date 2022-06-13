@@ -1,3 +1,5 @@
+import json
+import pickle
 from functools import wraps
 
 import jwt
@@ -7,6 +9,7 @@ from Flask.BackendHelper.Controller.UserController import UserController
 from Flask.BackendHelper.Controller.DataController import DataController
 from Flask.BackendHelper.Controller.QRCodeController import QRCodeController
 from Flask.BackendHelper.Controller.ViewController import ViewController
+from Flask.BackendHelper.Cryptography.CryptoHelper import generateFernet
 from Flask.BackendHelper.DB.DBHelper import *
 from Models import User
 from Models.InitDatabase import *
@@ -45,19 +48,36 @@ app.add_url_rule("/read-qrcode", view_func=QRCodeController.readQRCode, methods=
 
 '''UserController'''
 # @app.route("/sign-up", methods=['GET', 'POST'])
-app.add_url_rule("/sign-up", view_func=UserController.sign_up, methods=['GET', 'POST'])
+app.add_url_rule("/sign-up", view_func=UserController.sign_up, methods=['POST'])
 # @app.route("/login", methods=['GET', 'POST'])
-app.add_url_rule("/login", view_func=UserController.login, methods=['GET', 'POST'])
+app.add_url_rule("/login", view_func=UserController.login, methods=['POST'])
+# loginAdmin
+app.add_url_rule("/login-admin", view_func=UserController.loginAdmin, methods=['POST'])
 # @app.route("/delete-user", methods=['GET', 'POST'])
 app.add_url_rule("/delete-user", view_func=UserController.delete_user, methods=['GET', 'POST'])
-# @app.route("/logout")
-app.add_url_rule("/logout", view_func=UserController.logout, methods=['GET', 'POST'])
 # change PW
-app.add_url_rule("/change-password", view_func=UserController.changePassword, methods=['POST'])
+app.add_url_rule("/change-password", view_func=UserController.change_password, methods=['POST'])
+# change Mail
+app.add_url_rule("/change-mail", view_func=UserController.change_mail, methods=['POST'])
 # forget PW
-app.add_url_rule("/forget-password", view_func=UserController.forgetPasswordSendMail, methods=['POST'])
+app.add_url_rule("/forget-password", view_func=UserController.forget_password_send_mail, methods=['POST'])
 # confirm email
-app.add_url_rule("/change-password", view_func=UserController.forgetPassword, methods=['GET'])
+app.add_url_rule("/change-password", view_func=UserController.forget_password, methods=['GET'])
 
 if __name__ == "__main__":
-    app.run()
+    # Opening JSON file
+    with open('../globalFernetFile.json', 'r') as openfile:
+        # Reading from json file
+        json_object = json.load(openfile)
+    print(json_object["fernet"])
+    if json_object["fernet"] == "":
+        globalFernet = generateFernet()
+        dictionary = {
+            "fernet": pickle.dumps(globalFernet).decode("iso8859_16")
+        }
+        # Serializing json
+        json_object = json.dumps(dictionary, indent=4)
+        # Writing to sample.json
+        with open("../globalFernetFile.json", "w") as outfile:
+            outfile.write(json_object)
+    app.run(host='178.63.84.123', port=5000)
