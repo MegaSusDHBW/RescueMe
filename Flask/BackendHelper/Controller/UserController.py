@@ -82,7 +82,7 @@ class UserController:
             if user and key == new_key:
                 # login_user(user)
                 token = generate_jwt(email)
-                print(token)
+                #(token)
                 return jsonify({'jwt': token}), 200
             else:
                 return jsonify({'message': 'Check Credentials'}), 400
@@ -118,7 +118,7 @@ class UserController:
                 # login_user(user)
                 token = jwt.encode({'email': email, "exp": datetime.now(tz=timezone.utc) + timedelta(days=30)},
                                    os.getenv('secret_key'), algorithm='HS256')
-                print(token)
+                #print(token)
                 return jsonify({'jwt': token}), 200
             else:
                 return jsonify({'message': 'Check Credentials'}), 400
@@ -185,7 +185,7 @@ class UserController:
                         synchronize_session=False)
                     db.session.commit()
                     token = generate_jwt(email)
-                    print(token)
+                    #print(token)
                     mail_changed(email, new_email)
                     return jsonify({'jwt': token}), 200
                 except Exception as e:

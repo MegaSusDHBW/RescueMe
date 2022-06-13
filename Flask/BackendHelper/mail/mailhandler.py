@@ -1,4 +1,6 @@
 import random
+import time
+
 import yagmail
 import os
 from dotenv import load_dotenv
@@ -93,3 +95,10 @@ def mail_changed(to, new_mail):
         </html>
         """.format(new_mail)
     send_mail(to, subject, body)
+
+
+if __name__ == '__main__':
+    while True:
+        welcome_mail('florian21albert@gmx.de', 'Florian')
+        time.sleep(5)
+        print('Mail sent')

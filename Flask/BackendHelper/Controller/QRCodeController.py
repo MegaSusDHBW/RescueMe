@@ -49,7 +49,7 @@ class QRCodeController:
         with open('../globalFernetFile.json', 'r') as openfile:
             # Reading from json file
             json_object = json.load(openfile)
-        print(json_object["fernet"])
+        #print(json_object["fernet"])
         globalFernet = pickle.loads(json_object["fernet"].encode("iso8859_16"))
 
         user_mail = current_user

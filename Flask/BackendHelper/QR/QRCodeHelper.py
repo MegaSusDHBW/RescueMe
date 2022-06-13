@@ -50,11 +50,11 @@ def createQRCode(qrcode_dict, fernet):
     # daten mit fernet verschlüsseln
     encryptedJSON = encryptData(data, fernet)
 
-    print(encryptedJSON)
+    #print(encryptedJSON)
 
     # bytes in string umwandeln
     encryptedJSON = encryptedJSON.decode('utf-8')
-    print(encryptedJSON)
+    #print(encryptedJSON)
     qr = qrcode.QRCode(box_size=100, border=1, error_correction=qrcode.constants.ERROR_CORRECT_L, version=1)
     qr.add_data(encryptedJSON)
     logo = Image.open('../static/img/logo-qr.png')
